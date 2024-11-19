@@ -16,6 +16,24 @@
       "message": "Stupid question, how do I verify this is the correct id?",
       "revId": "3cfc9848700edef18388bb697a2feae33bc17ba4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "765a9571_dba1c738",
+        "filename": "DIR_METADATA",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1547432
+      },
+      "writtenOn": "2024-11-19T09:17:57Z",
+      "side": 1,
+      "message": "You can browse components at: https://issues.chromium.org/components. UI\u003eInternationalization is at https://issues.chromium.org/components/1456398/.",
+      "parentUuid": "03ed042c_bfac950c",
+      "revId": "3cfc9848700edef18388bb697a2feae33bc17ba4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
