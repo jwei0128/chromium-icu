@@ -1394,7 +1394,8 @@
       ],
       "rules": [
         "-/*",
-        "+/RuleBasedTransliteratorIDs/Latin-ASCII"
+        "+/RuleBasedTransliteratorIDs/Latin-ASCII",
+        "+/RuleBasedTransliteratorIDs/Katakana-Hiragana"
       ]
     },
 // Remove all the Version

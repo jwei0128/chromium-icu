@@ -1418,7 +1418,8 @@
       ],
       "rules": [
         "-/*",
-        "+/RuleBasedTransliteratorIDs/Latin-ASCII"
+        "+/RuleBasedTransliteratorIDs/Latin-ASCII",
+        "+/RuleBasedTransliteratorIDs/Katakana-Hiragana"
       ]
     },
 // Based on filter_unit_data
