@@ -288,3 +288,8 @@ D. Local Modifications
   - https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=68895
   - https://issues.chromium.org/u/1/issues/345352978
   - https://unicode-org.atlassian.net/browse/ICU-22730
+
+17. Patch UnicodeString to fix heap-buffer-overflow .
+    patches/unicode_string.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23060
+  - https://g-issues.chromium.org/issues/393989622
