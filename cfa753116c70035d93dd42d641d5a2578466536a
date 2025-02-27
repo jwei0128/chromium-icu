@@ -33,6 +33,24 @@
       "message": "Confirming that 3420 is layered on top of 3416, and the patch in this CL is the combination of the two?",
       "revId": "cfa753116c70035d93dd42d641d5a2578466536a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f1b1c15_6d351f8a",
+        "filename": "README.chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-02-27T19:51:23Z",
+      "side": 1,
+      "message": "+1. Curious about this too. From an upgrade perspective, it might be easier to combine.",
+      "parentUuid": "27968a73_f531256d",
+      "revId": "cfa753116c70035d93dd42d641d5a2578466536a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
