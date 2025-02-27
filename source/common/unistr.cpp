@@ -1866,9 +1866,11 @@ UnicodeString::cloneArrayIfNeeded(int32_t newCapacity,
     } else if(newCapacity <= US_STACKBUF_SIZE && growCapacity > US_STACKBUF_SIZE) {
       growCapacity = US_STACKBUF_SIZE;
     } else if(newCapacity > growCapacity) {
+      setToBogus();
       return false;  // bad inputs
     }
     if(growCapacity > kMaxCapacity) {
+      setToBogus();
       return false;
     }
 
