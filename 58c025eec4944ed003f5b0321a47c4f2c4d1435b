@@ -50,6 +50,24 @@
       "message": "JFYI:  In the past when the tzdb is updated, we added a few lines of test JS snippet to show what\u0027s changed (in this case, America/Asuncion does not observe DST any more starting with spring 2025).",
       "revId": "58c025eec4944ed003f5b0321a47c4f2c4d1435b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffc00694_67be9fe2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-03-18T23:33:50Z",
+      "side": 1,
+      "message": "+1. @syg, can you add your testing method to the CL description. ftang use to do this but I was sloppier with the descriptions. https://chromium-review.googlesource.com/c/chromium/deps/icu/+/5340522\n\nI.e. Something like\n\n```\n2025a announced updates to Paraguay DST removal. https://lists.iana.org/hyperkitty/list/tz-announce@iana.org/thread/MWII7R3HMCEDNUCIYQKSSTYYR7UWK4OQ/\n\nTested locally that \nconsole.log(new Date(\"2025-03-23T09:00:00Z\").toLocaleString(\"en-US\", { timeZone: \"America/Asuncion\" })); now prints 6AM instead of 5AM.\n\n```",
+      "parentUuid": "4238b507_a94648c9",
+      "revId": "58c025eec4944ed003f5b0321a47c4f2c4d1435b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
