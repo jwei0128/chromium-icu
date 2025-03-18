@@ -16,6 +16,47 @@
       "message": "The process here is to update icu, then run tryjobs on chromium/src and V8, right?",
       "revId": "909e3b8a1f7df0e6f6748ba3ef46391147b63218",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dbb6aed_4671629e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-03-18T19:26:59Z",
+      "side": 1,
+      "message": "Correct. You can also build Chromium locally and verify the tz update is correct manually.",
+      "parentUuid": "0e22032f_caeaf1f3",
+      "revId": "909e3b8a1f7df0e6f6748ba3ef46391147b63218",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "835d543d_ddcaf057",
+        "filename": "source/data/misc/timezoneTypes.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-03-18T19:26:59Z",
+      "side": 1,
+      "message": "Sorry I forgot that this line needs to be removed because it messes up existing assumptions that Factory will return the default timezone. https://g-issues.chromium.org/issues/381620359\n\nThis is not super clear in the README. Perhaps we need to move this step up towards the TZ section.\nhttps://crsrc.org/c/third_party/icu/README.chromium;drc\u003dd30b7b0bb3829f2e220df403ed461a1ede78b774;l\u003d256",
+      "range": {
+        "startLine": 173,
+        "startChar": 12,
+        "endLine": 173,
+        "endChar": 34
+      },
+      "revId": "909e3b8a1f7df0e6f6748ba3ef46391147b63218",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
