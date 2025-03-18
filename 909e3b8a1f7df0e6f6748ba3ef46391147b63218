@@ -57,6 +57,30 @@
       },
       "revId": "909e3b8a1f7df0e6f6748ba3ef46391147b63218",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1c0681f_543df93f",
+        "filename": "source/data/misc/timezoneTypes.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1362925
+      },
+      "writtenOn": "2025-03-18T21:02:26Z",
+      "side": 1,
+      "message": "Good catch, removed.",
+      "parentUuid": "835d543d_ddcaf057",
+      "range": {
+        "startLine": 173,
+        "startChar": 12,
+        "endLine": 173,
+        "endChar": 34
+      },
+      "revId": "909e3b8a1f7df0e6f6748ba3ef46391147b63218",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
