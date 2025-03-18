@@ -1,6 +1,6 @@
 ﻿// © 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
-// Generated using tools/cldr/cldr-to-icu/build-icu-data.xml
+// Generated using tools/cldr/cldr-to-icu/
 timezoneTypes:table(nofallback){
     bcpTypeAlias{
         tz{
@@ -170,6 +170,7 @@ timezoneTypes:table(nofallback){
             EST5EDT{"America/New_York"}
             Egypt{"Africa/Cairo"}
             Eire{"Europe/Dublin"}
+            Factory{"Etc/Unknown"}
             GB{"Europe/London"}
             GB-Eire{"Europe/London"}
             GMT{"Etc/GMT"}
