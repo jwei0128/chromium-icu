@@ -207,7 +207,11 @@ D. Local Modifications
      windowsZones.txt
      zoneinfo64.txt
 
-  As of Oct 2, 2024, the latest version is 2024b
+  - Delete the line containing `Factory{"Etc/Unknown"}` from
+    timezoneTypes.txt before regenerating data
+    bug: https://crbug.com/381620359
+
+  As of Mar 18, 2025, the latest version is 2025a
   and the above files are available at the ICU github repos.
 
 4. Build-related changes
