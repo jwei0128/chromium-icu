@@ -33,6 +33,24 @@
       "message": "What breaks? I\u0027m not super familiar with infra in chrome but do we need this everywhere (outside of Fuchsia?)",
       "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce14a1d0_29487de6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-04-01T22:17:46Z",
+      "side": 1,
+      "message": "You\u0027ll get warnings like the following:\n```\nFAILED: [code\u003d1] host_x64/obj/zircon/system/ulib/fbl/test/fbl-test.confine_array_index_tests.cc.o\n../../prebuilt/third_party/clang/custom/bin/clang++ -MD -MF host_x64/obj/zircon/system/ulib/fbl/test/fbl-test.confine_array_index_tests.cc.o.d -DFBL_TEST_ENABLE_WAVL_TREE_BALANCE_TEST\u003d1 -D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -DNDEBUG\u003d1 -DRAPIDJSON_HAS_STDSTRING -DRAPIDJSON_HAS_CXX11_RANGE_FOR -DRAPIDJSON_HAS_CXX11_RVALUE_REFS -DRAPIDJSON_HAS_CXX11_TYPETRAI...\nIn file included from ../../zircon/system/ulib/fbl/test/confine_array_index_tests.cc:7:\nIn file included from ../../zircon/system/ulib/zxtest/include/zxtest/zxtest.h:19:\nIn file included from ../../zircon/system/ulib/zxtest/include/zxtest/cpp/zxtest.h:29:\n../../zircon/system/ulib/zxtest/include/zxtest/cpp/scoped_trace.h:22:11: error: virtual method \u0027~ScopedTrace\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n   22 |   virtual ~ScopedTrace() final { zxtest::Runner::GetInstance()-\u003ePopTrace(); }\n      |           ^\n1 error generated.\n```\nIf you compile w/ `-Werror` then your build breaks. The fix is usually pretty easy, and the compiler guides you, but since we don\u0027t own the code, its pretty hard to just go in and fix it all.\n\nMore or less, you\u0027ll just need to remove the virtual keyword when the class is marked \"final\". You\u0027ll end up needing this for newer versions of `clang`. It was added in https://github.com/llvm/llvm-project/pull/133265",
+      "parentUuid": "8659d6bb_e88f20d9",
+      "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
