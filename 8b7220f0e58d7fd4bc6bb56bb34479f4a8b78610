@@ -51,6 +51,24 @@
       "parentUuid": "8659d6bb_e88f20d9",
       "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8acad16_b5f14c5a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-04-01T22:19:22Z",
+      "side": 1,
+      "message": "I should have been more clear, the error log is just an example.\n\n```\nAILED: [code\u003d1] x64-shared/obj/third_party/icu/default/source/common/libicuuc.bmpset.cpp.o\n../../prebuilt/third_party/clang/custom/bin/clang++ -MD -MF x64-shared/obj/third_party/icu/default/source/common/libicuuc.bmpset.cpp.o.d -DU_COMMON_IMPLEMENTATION -DU_ICUDATAENTRY_IN_COMMON -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -D_LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS\u003d1 -DZX_ASSERT_LEVEL\u003d2 -DHAVE_DLOPEN\u003d0 -DUCONFIG_ONLY_HTML_CONVERSION\u003d1 -DUCONFIG_USE_ML_PHRASE_BREAKING\u003d1 -DUCONFIG_USE_WINDOWS...\nIn file included from ../../third_party/icu/default/source/common/bmpset.cpp:20:\n../../third_party/icu/default/source/common/unicode/uniset.h:498:18: error: virtual method \u0027operator\u003d\u003d\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  498 |     virtual bool operator\u003d\u003d(const UnicodeSet\u0026 o) const;\n      |                  ^\n../../third_party/icu/default/source/common/unicode/uniset.h:525:21: error: virtual method \u0027hashCode\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  525 |     virtual int32_t hashCode(void) const;\n      |                     ^\n../../third_party/icu/default/source/common/unicode/uniset.h:795:21: error: virtual method \u0027size\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  795 |     virtual int32_t size(void) const;\n      |                     ^\n../../third_party/icu/default/source/common/unicode/uniset.h:803:19: error: virtual method \u0027isEmpty\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  803 |     virtual UBool isEmpty(void) const;\n      |                   ^\n../../third_party/icu/default/source/common/unicode/uniset.h:828:19: error: virtual method \u0027contains\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  828 |     virtual UBool contains(UChar32 start, UChar32 end) const;\n      |                   ^\n../../third_party/icu/default/source/common/unicode/uniset.h:846:19: error: virtual method \u0027containsAll\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n  846 |     virtual UBool containsAll(const UnicodeSet\u0026 c) const;\n      |                   ^\n../../third_party/icu/default/source/common/unicode/uniset.h:1119:25: error: virtual method \u0027add\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n 1119 |     virtual UnicodeSet\u0026 add(UChar32 start, UChar32 end);\n      |                         ^\n../../third_party/icu/default/source/common/unicode/uniset.h:1225:25: error: virtual method \u0027retain\u0027 is inside a \u0027final\u0027 class and can never be overridden [-Werror,-Wunnecessary-virtual-specifier]\n 1225 |     virtual UnicodeSet\u0026 retain(UChar32 start, UChar32 end);\n ```\n Is from ICU code. Here\u0027s a link to one of the bots. https://ci.chromium.org/ui/p/fuchsia/builders/ci/clang_toolchain.ci.core.x64-debug-tot-build_only/b8718760483571006945/overview",
+      "parentUuid": "ce14a1d0_29487de6",
+      "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
