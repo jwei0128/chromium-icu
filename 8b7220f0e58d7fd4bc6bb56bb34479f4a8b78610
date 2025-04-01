@@ -69,6 +69,24 @@
       "parentUuid": "ce14a1d0_29487de6",
       "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89000c98_7a03cfda",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-04-01T22:46:02Z",
+      "side": 1,
+      "message": "Acknowledged. Thanks, this is good to know in case Chromium runs into similar issues.",
+      "parentUuid": "f8acad16_b5f14c5a",
+      "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
