@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d60360c_5fcc3e7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-04-01T16:06:48Z",
+      "side": 1,
+      "message": "PTAL. Until we suppress this or fix the ICU code we\u0027re unable to update Fuchsia\u0027s toolchain.",
+      "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
