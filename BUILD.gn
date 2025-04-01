@@ -164,6 +164,9 @@ config("icu_code") {
       # probably does not matter. So we instruct Fuchsia
       # to lower its standards when compiling ICU.
       "-Wno-newline-eof",
+
+      # clang enabled this by default.
+      "-Wno-unnecessary-virtual-specifier",
     ] + icu_fuchsia_extra_compile_flags
   }
   if (current_cpu == "wasm") {
