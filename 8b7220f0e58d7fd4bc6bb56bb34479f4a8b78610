@@ -16,6 +16,23 @@
       "message": "PTAL. Until we suppress this or fix the ICU code we\u0027re unable to update Fuchsia\u0027s toolchain.",
       "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8659d6bb_e88f20d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-04-01T22:09:59Z",
+      "side": 1,
+      "message": "What breaks? I\u0027m not super familiar with infra in chrome but do we need this everywhere (outside of Fuchsia?)",
+      "revId": "8b7220f0e58d7fd4bc6bb56bb34479f4a8b78610",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
