@@ -69,6 +69,24 @@
       "parentUuid": "335d47dc_726f4e42",
       "revId": "6145188ad842696c6bb87f8b5d7ecc771b2699a8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "957baa69_cefe338f",
+        "filename": "patches/unnecessary_virtual_specifier.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-05-05T16:01:38Z",
+      "side": 1,
+      "message": "Gotcha thanks. As long as it was applied upstream, this lgtm.",
+      "parentUuid": "fae2073f_5a1e3c57",
+      "revId": "6145188ad842696c6bb87f8b5d7ecc771b2699a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
