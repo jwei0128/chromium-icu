@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f4553fe_8d526998",
+        "filename": "README.chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-05-05T15:56:17Z",
+      "side": 1,
+      "message": "Add a link to the bug",
+      "revId": "6145188ad842696c6bb87f8b5d7ecc771b2699a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "335d47dc_726f4e42",
+        "filename": "patches/unnecessary_virtual_specifier.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-05-05T15:56:17Z",
+      "side": 1,
+      "message": "How did you create this patch file? If it was manually done, this is going to be hard to maintain unless the upstream ICU repo also decides to remove unnecessary virtuals.",
+      "revId": "6145188ad842696c6bb87f8b5d7ecc771b2699a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
