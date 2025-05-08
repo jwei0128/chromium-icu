@@ -70,6 +70,24 @@
       "parentUuid": "36f8e555_6d9fce8f",
       "revId": "b929596baebf0ab4ac7ec07f38365db4c50a559d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbb1a577_028def64",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-05-08T20:23:08Z",
+      "side": 1,
+      "message": "hmm, seems like it already rolled on May 5. I see your patch in the update, and at least one of the errors is from `hashCode()`, which should have the virtual specifier removed now... Anyway, this seems like something on our end, so sorry for the noise, and thanks again.",
+      "parentUuid": "2452be23_47a20d4f",
+      "revId": "b929596baebf0ab4ac7ec07f38365db4c50a559d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
