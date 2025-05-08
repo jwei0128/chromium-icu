@@ -34,6 +34,24 @@
       "parentUuid": "a8562c9e_46a3db20",
       "revId": "b929596baebf0ab4ac7ec07f38365db4c50a559d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36f8e555_6d9fce8f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-05-08T18:37:54Z",
+      "side": 1,
+      "message": "https://ci.chromium.org/ui/p/fuchsia/builders/global.ci/clang_toolchain.ci.core.x64-debug/b8715498915781519649/overview. It may be that we need to roll ICU @leonardchan@google.com is looking at that right now.",
+      "parentUuid": "5c643c28_01569d2d",
+      "revId": "b929596baebf0ab4ac7ec07f38365db4c50a559d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
