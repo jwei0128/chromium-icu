@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8562c9e_46a3db20",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1444118
+      },
+      "writtenOn": "2025-05-08T18:31:02Z",
+      "side": 1,
+      "message": "We may need to revert this. An upstream patch landed this again under -Wextra https://github.com/llvm/llvm-project/pull/138741",
+      "revId": "b929596baebf0ab4ac7ec07f38365db4c50a559d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
