@@ -12,7 +12,7 @@ if (defined(is_fuchsia_tree) && is_fuchsia_tree) {
   declare_args() {
     # Tells icu to load an external data file rather than rely on the icudata
     # being linked directly into the binary.
-    icu_use_data_file = true
+    icu_use_data_file = false
 
     # If true, then this creates a stub data file. This should be disabled if
     # a custom data file will be used instead, in order to avoid conflicting
