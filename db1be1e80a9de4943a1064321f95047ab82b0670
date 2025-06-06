@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e81d252_4c41c129",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1430312
+      },
+      "writtenOn": "2025-06-06T16:40:03Z",
+      "side": 1,
+      "message": "Frank, can you PTAL? I\u0027m interested in trying out this change against the Mega CQ but I can\u0027t do so until I send a CL to roll DEPS in chromium/src. Generally, what do you think about this change? Are there good reasons not to link this data into the binaries that need it by default?",
+      "revId": "db1be1e80a9de4943a1064321f95047ab82b0670",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
