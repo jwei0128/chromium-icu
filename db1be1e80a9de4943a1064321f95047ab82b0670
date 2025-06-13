@@ -33,6 +33,24 @@
       "message": "IIRC, I guess a separate ICU data file can come handy when one is testing ICU changes. It also cuts down the artifact sizes on trybots (chrome, and various test binaries share a single icu data file).\n\nI wonder why icu data file loading fails in the wild. Is it because the integrity of Chrome installation directory is compromised somehow  ?",
       "revId": "db1be1e80a9de4943a1064321f95047ab82b0670",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44186b04_191f5c88",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1430312
+      },
+      "writtenOn": "2025-06-13T23:43:10Z",
+      "side": 1,
+      "message": "\u003e I wonder why icu data file loading fails in the wild. Is it because the integrity of Chrome installation directory is compromised somehow?\n\nI would assume so. Filesystems may be subject to external modification (e.g. by enterprise software, antivirus, etc.), corruption, curious users, etc...\n\nThanks for explaining, it makes sense to me that we might want to keep using an external file for testing. Using statically linked data for official builds is an option, but internal references to this file are abundant and I\u0027m concerned that it\u0027ll be far too much effort. I\u0027ll shelve this change for now and pursue mitigations in the Chrome Enterprise Companion App instead.",
+      "parentUuid": "3c2fb1bf_18baf14f",
+      "revId": "db1be1e80a9de4943a1064321f95047ab82b0670",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
