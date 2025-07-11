@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf2b874f_ce85063d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-07-11T02:24:30Z",
+      "side": 1,
+      "message": "foolip@, could you use your google.com account as chromium.org is not listed in OWNERS file?\nAlso I appreciate if you submit this CL as I don\u0027t have permission to do that.",
+      "revId": "47ec2241da1d03b4b05378bd9f9788291b6630cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
