@@ -145,12 +145,11 @@ them when updating ICU.
     old version from ICU69-1.
   - rules/word_ja.txt (used only on Android)
     Added for Japanese-specific word-breaking without the C+J dictionary.
-  - rules/{root,zh,zh_Hant}.txt
-    a. Use line_normal by default.
-    b. Drop local patches we used to have for the following issues. They'll
-       be dealt with in the upstream (Unicode/CLDR).
-       http://unicode.org/cldr/trac/ticket/6557
-       http://unicode.org/cldr/trac/ticket/4200 (http://crbug.com/39779)
+  - rules/{zh,zh_Hant}.txt
+    Drop local patches we used to have for the following issues. They'll
+    be dealt with in the upstream (Unicode/CLDR).
+    http://unicode.org/cldr/trac/ticket/6557
+    http://unicode.org/cldr/trac/ticket/4200 (http://crbug.com/39779)
 
 3. Add {an,ku,tg,wa}.txt to source/data/{locale,lang}
    with the minimal locale data necessary for spellchecker and
@@ -178,6 +177,13 @@ D. Local Modifications
     or discarded as necessary.
 
 2. Breakiterator patches
+
+  - patches/line_normal.patch for word.txt
+    Use line_normal by default.
+
+  - patches/lstm.patch for word.txt
+    Remove the lstm block for Thai and Burmese.
+
   - patches/wordbrk.patch for word.txt, word_POSIX.txt, and word_fi_sv.txt
     a. Move full stops (U+002E, U+FF0E) from MidNumLet to MidNum so that
        FQDN labels can be split at '.'
