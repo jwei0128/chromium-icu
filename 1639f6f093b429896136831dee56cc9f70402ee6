@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6e6d053_40e0a7ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-08-27T20:56:58Z",
+      "side": 1,
+      "message": "Shane, I updated to PS4 which uses the \"intersection\" filter, only for \"common\" and \"android\" yet though. Can you quickly see if this is understanding correctly?\n\nInterestingly, the file sizes are even smaller than when \"en_XA\" and \"ar_XB\" are removed. Do you have explanation why, or am I doing something wrong?",
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
