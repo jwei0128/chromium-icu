@@ -67,6 +67,24 @@
       "message": "sorry, nvm, build failed because I didn\u0027t clean the work directory. Just removing looks fine.",
       "revId": "997a3fa722b5b765e4cb32e80a490ef8a3802779",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "839a47f9_aa2bbaa2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-08-27T16:26:20Z",
+      "side": 1,
+      "message": "sorry, nvm, build failed because I didn\u0027t clean the work directory. Just removing looks fine.",
+      "parentUuid": "6a45c79c_ca68b1b1",
+      "revId": "997a3fa722b5b765e4cb32e80a490ef8a3802779",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
