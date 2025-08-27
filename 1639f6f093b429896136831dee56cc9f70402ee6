@@ -39,6 +39,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ee36b0d_39c834e9",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-08-27T21:25:28Z",
+      "side": 1,
+      "message": "Thanks, I see, can you check again?\n\nNow the file sizes are larger than when removed.\n* Removed common: 10822192\n* this common: 10918880\n* Removed Android: 9238160\n* this Android: 9334832\n\nThey\u0027re even larger than the `resourceFilter` case.\n\nDo I need to add this to all other filters (i.e., region, units, zone, lang)?",
+      "parentUuid": "e395a0d1_370697b7",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
