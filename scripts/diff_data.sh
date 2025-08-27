@@ -1,4 +1,46 @@
 #!/bin/bash
+#
+# Print the size differences of data files in two directories.
+#
+# Note that this tool does not print removed files; only changed and new files.
+#
+# # Examples
+#
+# First, you need to create a backup copy of the data files to compare with. For
+# example, to compare with `origin/main`:
+# ```shell-session
+# cd third_party/icu
+# git checkout origin/main
+# ```
+# Then build the data files:
+# ```shell-session
+# cd scripts
+# ./make_data_all.sh
+# ```
+# You need to keep the `dataout` directory somewhere safe. For example:
+# ```shell-session
+# mkdir -p ~/icudata/tot
+# mv dataout ~/icudata/tot
+# ```
+# Then change the work directory to what you want to compare.
+# For example, to compare with your local branch:
+# ```shell-session
+# git checkout -f mybranch
+# ```
+# If there are any source changes, it is often safe to clean the data directory
+# before rebuilding the data files.
+# ```shell-session
+# (cd data; make clean)
+# ```
+# Then rebuild the data files:
+# ```shell-session
+# ./make_data_all.sh
+# ```
+#
+# You can then compare the two data files:
+# ```shell-session
+# ./diff_data_all.sh ~/icudata/tot .
+# ```
 
 # set -x
 
@@ -45,7 +87,11 @@ rm -rf $SIZEFILE
 for res in $(cat "${SORTED_ICUDATA_LST2}")
 do
   # diff the txt file
-  STAT1=`stat --printf="%s" ${RESDIR1}/$res`
+  if [[ -f "${RESDIR1}/$res" ]]; then
+    STAT1=`stat --printf="%s" ${RESDIR1}/$res`
+  else
+    STAT1=0
+  fi
   STAT2=`stat --printf="%s" ${RESDIR2}/$res`
   SIZEDIFF=`expr $STAT2 - $STAT1`
   echo $SIZEDIFF $STAT1 $STAT2 $res >> $SIZEFILE
