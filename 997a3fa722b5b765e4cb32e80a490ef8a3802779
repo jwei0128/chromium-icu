@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8cc7fb9a_368b3bd0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157920
+      },
+      "writtenOn": "2025-08-27T10:55:47Z",
+      "side": 1,
+      "message": "I have compared this to the result of removing all of the files (`find source/data/ -name en_XA.txt -o -name ar_XB.txt | xargs rm`) before the build, and found that removing the files makes the data files even smaller. So it seems like this doesn\u0027t cover everything.",
+      "revId": "997a3fa722b5b765e4cb32e80a490ef8a3802779",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
