@@ -2,8 +2,6 @@
 
 # set -x
 
-ICUROOT="$(dirname "$0")/.."
-
 if [ $# -lt 3 ];
 then
   echo "Usage: "$0" (android|cast|chromeos|common|flutter|flutter_desktop|ios) icubuilddir1 icubuilddir2" >&2
@@ -12,6 +10,16 @@ then
   echo "The first parameter indicate which build to be compared." >&2
   exit 1
 fi
+
+# Helper Functions
+
+size_if_exists() {
+  if [ -f "$1" ]; then
+    stat --printf="%s" "$1"
+  else
+    echo 0
+  fi
+}
 
 # Input Parameters
 BUILD=$1
@@ -36,23 +44,21 @@ echo "              ICUDATA.LST DIFFERENCES"
 diff -u ${SORTED_ICUDATA_LST1} ${SORTED_ICUDATA_LST2}
 echo "-------------------------------------------------------"
 
-
 echo -n "> Checking and sorting the diff size ."
 SIZEFILE=/tmp/${BUILD}size.txt
 SIZESORTEDFILE=/tmp/${BUILD}sizesorted.txt
 count=0
 rm -rf $SIZEFILE
-for res in $(cat "${SORTED_ICUDATA_LST2}")
+for res in $(cat "$SORTED_ICUDATA_LST1" "$SORTED_ICUDATA_LST2" | sort -u)
 do
-  # diff the txt file
-  STAT1=`stat --printf="%s" ${RESDIR1}/$res`
-  STAT2=`stat --printf="%s" ${RESDIR2}/$res`
-  SIZEDIFF=`expr $STAT2 - $STAT1`
-  echo $SIZEDIFF $STAT1 $STAT2 $res >> $SIZEFILE
-  count=`expr $count + 1`
-  if [ $count -gt 100 ]
+  # $res may only exist in of the directories
+  SIZE1=`size_if_exists "$RESDIR1/$res"`
+  SIZE2=`size_if_exists "$RESDIR2/$res"`
+  SIZEDIFF=$(($SIZE2 - $SIZE1))
+  echo $SIZEDIFF $SIZE1 $SIZE2 $res >> $SIZEFILE
+  count=$((count + 1))
+  if (( $count % 100 == 0 ))
   then
-    count=0
     echo -n "."
   fi
 done
