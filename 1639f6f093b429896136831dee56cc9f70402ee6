@@ -16,6 +16,29 @@
       "message": "Shane, I updated to PS4 which uses the \"intersection\" filter, only for \"common\" and \"android\" yet though. Can you quickly see if this is understanding correctly?\n\nInterestingly, the file sizes are even smaller than when \"en_XA\" and \"ar_XB\" are removed. Do you have explanation why, or am I doing something wrong?",
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e395a0d1_370697b7",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1181561
+      },
+      "writtenOn": "2025-08-27T20:59:00Z",
+      "side": 1,
+      "message": "Yes, this is much closer to what you want.\n\ncomplementOf with a locale filter isn\u0027t the right way to do it, though, because the locale filter includes all parent locales, including \"en\" and \"root\", which you don\u0027t want to be excluded. Since you are targeting these two specific locales, you can just target them directly using an excludelist filter as shown in the test cases I added in the ICU PR.",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
