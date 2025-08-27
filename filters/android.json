@@ -2127,6 +2127,25 @@
         "+/RuleBasedTransliteratorIDs/Kana-Hira"
       ]
     },
+// Remove all pseudo locales.
+    {
+      "categories": [
+        "lang_tree",
+        "locales_tree",
+        "region_tree",
+        "unit_tree",
+        "zone_tree"
+      ],
+      "files": {
+        "includelist": [
+          "en_XA",
+          "ar_XB"
+        ]
+      },
+      "rules": [
+        "-/*"
+      ]
+    },
 // Remove all the Version
     {
       "categories": [
