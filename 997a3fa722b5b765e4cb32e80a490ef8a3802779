@@ -33,6 +33,23 @@
       "message": "Oh, removing is a brilliant idea, I didn\u0027t think it\u0027s buildable. Thanks!",
       "revId": "997a3fa722b5b765e4cb32e80a490ef8a3802779",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a45c79c_ca68b1b1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-08-27T16:13:54Z",
+      "side": 1,
+      "message": "ah, wait, it\u0027s not buildable for you? `make_data_all.sh` fails for me.",
+      "revId": "997a3fa722b5b765e4cb32e80a490ef8a3802779",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
