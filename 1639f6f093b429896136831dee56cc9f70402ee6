@@ -87,6 +87,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b408d9f4_92129847",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1181561
+      },
+      "writtenOn": "2025-08-27T22:44:03Z",
+      "side": 1,
+      "message": "This config looks okay to me. Can you share the diff on the res file tree?\n\nThere is a resindex file that contains the list of locales. Removing the en_XA.res file won\u0027t update resindex.res, which could have unexpected consequences. The filter file keeps it in sync.",
+      "parentUuid": "43fc5408_b6835b85",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
