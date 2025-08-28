@@ -111,6 +111,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "175d5aab_a896a3a8",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-08-28T07:54:17Z",
+      "side": 1,
+      "message": "Sent the diff files by e-mail. It looks like there are diffs in res_index.txt, so you might be right. There are other differences, I haven\u0027t looked into them yet.\n\nI updated this CL to apply the same change to region, zone, and units. The file size of `common` match with when removed, but the file size of `android` is still bigger than when removed by 30kb, so probably there are more to filter out. I\u0027ll look into the diff later tonight.\n\nIt still worries me a bit that maintaining 4 trees (locale, region, zone, units) in 8 filters (desktop, cros, android, cast, castvideo, fultter, flutter_desktop, ios) could be error prone, compared to removing + patching to update the res_index (I don\u0027t know how yet though) because the latter guarantees to apply on all platforms.",
+      "parentUuid": "b408d9f4_92129847",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
