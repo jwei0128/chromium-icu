@@ -135,6 +135,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecf14822_e3400858",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-09-02T07:00:33Z",
+      "side": 1,
+      "message": "Shane, I did a different way to verify this.\n\nFirst, the parent tree of this CL was updated to:\n1. Remove pseudo `.txt` files\n2. Generate `.dat` files\n3. Then revert removing `.txt`\"\n\nso that the differences of `.dat` files in this CL are against when `.txt` are removed.\n\nThen I added the \"intersection\" filters to all trees, except `chromeos`.\n\nThe result is, as you see in this CL, no binary differences for `.dat` files except `chromeos`, and generated `.dat` files.\n\nI also used [code search](https://source.chromium.org/search?q\u003d%22en_XA%22%20-f:en_XA%20f:third_party%2Ficu\u0026ss\u003dchromium%2Fchromium%2Fsrc) to find \"en_XA\" strings in the ICU source tree. It hit nothing.\n\nFrom these investigations, my hypotheses:\n1. Removing `.txt` files is equivalent to the \"intersection\" filter binary-wise.\n2. ICU doesn\u0027t have any index-like source files that need to be maintained when adding/removing `.txt` files.\n\nDoes this look right to you?",
+      "parentUuid": "175d5aab_a896a3a8",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
