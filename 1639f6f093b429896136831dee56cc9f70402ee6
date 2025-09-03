@@ -159,6 +159,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c19815ad_46b079f5",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1181561
+      },
+      "writtenOn": "2025-09-03T07:59:22Z",
+      "side": 1,
+      "message": "The list of locales is obtained via a glob on the txt file directory:\n\nhttps://github.com/unicode-org/icu/blob/39111ab37a289713314c2cf1867221c28ed269b7/icu4c/source/data/BUILDRULES.py#L565\n\nAnd res_index.txt is generated based on the results of filtering the glob output with the filters:\n\nhttps://github.com/unicode-org/icu/blob/39111ab37a289713314c2cf1867221c28ed269b7/icu4c/source/python/icutools/databuilder/request_types.py#L337\n\nSo your hypothesis seems correct.\n\n---\n\nHowever, the locale filter is supposed to apply to all trees. I don\u0027t immediately know why you need to repeat it for each component tree.",
+      "parentUuid": "ecf14822_e3400858",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
