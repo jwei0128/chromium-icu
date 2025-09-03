@@ -183,6 +183,30 @@
       },
       "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0195a37_7d65261f",
+        "filename": "filters/common.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2025-09-03T17:35:43Z",
+      "side": 1,
+      "message": "\u003e So your hypothesis seems correct.\n\nThank you Shane, then we\u0027ll go that way, as it\u0027s common to all filters. Thank you for your prompt help, it might be still useful if some filters want while other filters don\u0027t.\n\n\u003e However, the locale filter is supposed to apply to all trees. I don\u0027t immediately know why you need to repeat it for each component tree.\n\nHmm, I\u0027m not sure either. I uploaded PS13, which comments out \"unit_tree\" in `android.json`. There\u0027s 22KB increase in `android.dat`. You can see diff between PS12 and PS13 here:\nhttps://chromium-review.googlesource.com/c/chromium/deps/icu/+/6888131/12..13",
+      "parentUuid": "c19815ad_46b079f5",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 9
+      },
+      "revId": "1639f6f093b429896136831dee56cc9f70402ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
