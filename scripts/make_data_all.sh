@@ -19,6 +19,9 @@ function config_data {
     { echo "failed to configure data for $1" >&2; exit 1; }
 }
 
+echo "Removing pseudo locales"
+find "${ICUROOT}/source/data" -name 'en_XA*' -or -name 'ar_XB*' -delete
+
 echo "Build the necessary tools"
 "${ICUROOT}/source/runConfigureICU" --enable-debug --disable-release \
     Linux/gcc  --disable-tests --disable-layoutex --enable-rpath \
