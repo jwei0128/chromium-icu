@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f76fed2_20c48585",
+        "filename": "README.chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1552277
+      },
+      "writtenOn": "2025-09-26T16:09:04Z",
+      "side": 1,
+      "message": "A lot of these patches have been deleted. Were they intentionally deleted after being fixed upstream in ICU? If so, we should remove these instructions.",
+      "range": {
+        "startLine": 269,
+        "startChar": 0,
+        "endLine": 269,
+        "endChar": 2
+      },
+      "revId": "d93dd00a14f3473d0bc50f1dfa8166cb1cc96f4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
