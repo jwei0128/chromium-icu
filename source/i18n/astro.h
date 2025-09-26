@@ -31,7 +31,7 @@ U_NAMESPACE_BEGIN
  * at a given moment in time.  Accordingly, each <code>CalendarAstronomer</code>
  * object has a <code>time</code> property that determines the date
  * and time for which its calculations are performed.  You can set and
- * retrieve this property with {@link #setDate setDate}, {@link #getDate getDate}
+ * retrieve this property with {@link #setTime setTime}, {@link #getTime getTime}
  * and related methods.
  * <p>
  * Almost all of the calculations performed by this class, or by any
@@ -72,7 +72,6 @@ public:
    * value without worrying about whether other code will modify them.
    *
    * @see CalendarAstronomer.Equatorial
-   * @see CalendarAstronomer.Horizon
    * @internal
    */
   class U_I18N_API Ecliptic : public UMemory {
@@ -141,7 +140,6 @@ public:
    * value without worrying about whether other code will modify them.
    *
    * @see CalendarAstronomer.Ecliptic
-   * @see CalendarAstronomer.Horizon
    * @internal
    */
   class U_I18N_API Equatorial : public UMemory {
@@ -199,66 +197,6 @@ public:
      * @internal
      */
     double declination;
-  };
-
-  /**
-   * Represents the position of an  object in the sky relative to
-   * the local horizon.
-   * The <i>Altitude</i> represents the object's elevation above the horizon,
-   * with objects below the horizon having a negative altitude.
-   * The <i>Azimuth</i> is the geographic direction of the object from the
-   * observer's position, with 0 representing north.  The azimuth increases
-   * clockwise from north.
-   * <p>
-   * Note that Horizon objects are immutable and cannot be modified
-   * once they are constructed.  This allows them to be passed and returned by
-   * value without worrying about whether other code will modify them.
-   *
-   * @see CalendarAstronomer.Ecliptic
-   * @see CalendarAstronomer.Equatorial
-   * @internal
-   */
-  class U_I18N_API Horizon : public UMemory {
-  public:
-    /**
-     * Constructs a Horizon coordinate object.
-     * <p>
-     * @param alt  The altitude, measured in radians above the horizon.
-     * @param azim The azimuth, measured in radians clockwise from north.
-     * @internal
-     */
-    Horizon(double alt=0, double azim=0)
-      : altitude(alt), azimuth(azim) { }
-
-    /**
-     * Setter for Ecliptic Coordinate object
-     * @param alt  The altitude, measured in radians above the horizon.
-     * @param azim The azimuth, measured in radians clockwise from north.
-     * @internal
-     */
-    void set(double alt, double azim) {
-      altitude = alt;
-      azimuth = azim;
-    }
-
-    /**
-     * Return a string representation of this object, with the
-     * angles measured in degrees.
-     * @internal
-     */
-    UnicodeString toString() const;
-
-    /**
-     * The object's altitude above the horizon, in radians.
-     * @internal
-     */
-    double altitude;
-
-    /**
-     * The object's direction, in radians clockwise from north.
-     * @internal
-     */
-    double azimuth;
   };
 
 public:
@@ -353,22 +291,6 @@ public:
   void setDate(UDate aDate) { setTime(aDate); }
 
   /**
-   * Set the current date and time of this <code>CalendarAstronomer</code> object.  All
-   * astronomical calculations are performed based on this time setting.
-   *
-   * @param jdn   the desired time, expressed as a "julian day number",
-   *              which is the number of elapsed days since
-   *              1/1/4713 BC (Julian), 12:00 GMT.  Note that julian day
-   *              numbers start at <em>noon</em>.  To get the jdn for
-   *              the corresponding midnight, subtract 0.5.
-   *
-   * @see #getJulianDay
-   * @see #JULIAN_EPOCH_MS
-   * @internal
-   */
-  void setJulianDay(double jdn);
-
-  /**
    * Get the current time of this <code>CalendarAstronomer</code> object,
    * represented as the number of milliseconds since
    * 1/1/1970 AD 0:00 GMT (Gregorian).
@@ -384,20 +306,10 @@ public:
    * expressed as a "julian day number", which is the number of elapsed
    * days since 1/1/4713 BC (Julian), 12:00 GMT.
    *
-   * @see #setJulianDay
    * @see #JULIAN_EPOCH_MS
    * @internal
    */
   double getJulianDay();
-
-  /**
-   * Return this object's time expressed in julian centuries:
-   * the number of centuries after 1/1/1900 AD, 12:00 GMT
-   *
-   * @see #getJulianDay
-   * @internal
-   */
-  double getJulianCentury();
 
   /**
    * Returns the current Greenwich sidereal time, measured in hours
@@ -457,11 +369,6 @@ public:
    */
   Equatorial& eclipticToEquatorial(Equatorial& result, double eclipLong) ;
 
-  /**
-   * @internal
-   */
-  Horizon& eclipticToHorizon(Horizon& result, double eclipLong) ;
-
   //-------------------------------------------------------------------------
   // The Sun
   //-------------------------------------------------------------------------
@@ -493,30 +400,6 @@ public:
   Equatorial& getSunPosition(Equatorial& result);
 
 public:
-  /**
-   * Constant representing the vernal equinox.
-   * For use with {@link #getSunTime getSunTime}.
-   * Note: In this case, "vernal" refers to the northern hemisphere's seasons.
-   * @internal
-   */
-//  static double VERNAL_EQUINOX();
-
-  /**
-   * Constant representing the summer solstice.
-   * For use with {@link #getSunTime getSunTime}.
-   * Note: In this case, "summer" refers to the northern hemisphere's seasons.
-   * @internal
-   */
-  static double SUMMER_SOLSTICE();
-
-  /**
-   * Constant representing the autumnal equinox.
-   * For use with {@link #getSunTime getSunTime}.
-   * Note: In this case, "autumn" refers to the northern hemisphere's seasons.
-   * @internal
-   */
-//  static double AUTUMN_EQUINOX();
-
   /**
    * Constant representing the winter solstice.
    * For use with {@link #getSunTime getSunTime}.
@@ -569,22 +452,6 @@ public:
    */
   double getMoonAge();
 
-  /**
-   * Calculate the phase of the moon at the time set in this object.
-   * The returned phase is a <code>double</code> in the range
-   * <code>0 <= phase < 1</code>, interpreted as follows:
-   * <ul>
-   * <li>0.00: New moon
-   * <li>0.25: First quarter
-   * <li>0.50: Full moon
-   * <li>0.75: Last quarter
-   * </ul>
-   *
-   * @see #getMoonAge
-   * @internal
-   */
-  double getMoonPhase();
-
   class U_I18N_API MoonAge : public UMemory {
   public:
     MoonAge(double l)
@@ -598,28 +465,7 @@ public:
    * For use with {@link #getMoonTime getMoonTime}
    * @internal
    */
-  static const MoonAge NEW_MOON();
-
-  /**
-   * Constant representing the moon's first quarter.
-   * For use with {@link #getMoonTime getMoonTime}
-   * @internal
-   */
-//  static const MoonAge FIRST_QUARTER();
-
-  /**
-   * Constant representing a full moon.
-   * For use with {@link #getMoonTime getMoonTime}
-   * @internal
-   */
-  static const MoonAge FULL_MOON();
-
-  /**
-   * Constant representing the moon's last quarter.
-   * For use with {@link #getMoonTime getMoonTime}
-   * @internal
-   */
-//  static const MoonAge LAST_QUARTER();
+  static MoonAge NEW_MOON();
 
   /**
    * Find the next or previous time at which the Moon's ecliptic
@@ -630,15 +476,7 @@ public:
    *                  is desired, <tt>false</tt> for the previous occurrence.
    * @internal
    */
-  UDate getMoonTime(double desired, UBool next);
   UDate getMoonTime(const MoonAge& desired, UBool next);
-
-  /**
-   * Returns the time (GMT) of sunrise or sunset on the local date to which
-   * this calendar is currently set.
-   * @internal
-   */
-  UDate getMoonRiseSet(UBool rise);
 
   //-------------------------------------------------------------------------
   // Interpolation methods for finding the time at which a given event occurs
@@ -705,13 +543,9 @@ private:
   //
 
   double    julianDay;
-  double    julianCentury;
   double    sunLongitude;
   double    meanAnomalySun;
-  double    moonLongitude;
   double    moonEclipLong;
-  double    meanAnomalyMoon;
-  double    eclipObliquity;
   double    siderealT0;
   double    siderealTime;
 
