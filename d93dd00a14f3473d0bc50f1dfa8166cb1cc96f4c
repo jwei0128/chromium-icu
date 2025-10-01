@@ -22,6 +22,30 @@
       },
       "revId": "d93dd00a14f3473d0bc50f1dfa8166cb1cc96f4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08436036_8ffedaed",
+        "filename": "README.chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1157920
+      },
+      "writtenOn": "2025-10-01T16:12:31Z",
+      "side": 1,
+      "message": "Yes, a bunch of patches were removed on the staging branch. I\u0027ve now removed them from the README, made sure that all patches mentioned in the README exist, and conversely that all patches that exist are mentioned in the README.",
+      "parentUuid": "5f76fed2_20c48585",
+      "range": {
+        "startLine": 269,
+        "startChar": 0,
+        "endLine": 269,
+        "endChar": 2
+      },
+      "revId": "d93dd00a14f3473d0bc50f1dfa8166cb1cc96f4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
