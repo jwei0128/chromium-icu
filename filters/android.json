@@ -1800,6 +1800,7 @@
         "+/calendar/islamic-civil",
         "+/calendar/islamic-tbla",
         "+/calendar/islamic-rgsa",
+        "+/calendar/iso8601",
         "+/calendar/persian",
         "+/calendar/indian",
 // # Delete Japanese era display names in root. 'ja' has Japanese era names
