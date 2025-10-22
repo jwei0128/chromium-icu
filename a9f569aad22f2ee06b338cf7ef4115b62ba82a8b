@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf38d9b7_5c3a0db0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1291594
+      },
+      "writtenOn": "2025-10-22T22:14:58Z",
+      "side": 1,
+      "message": "PTAL. I remove the complex rule on root which somehow also missed coptic calendar format when I take a look at it again.",
+      "revId": "a9f569aad22f2ee06b338cf7ef4115b62ba82a8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
