@@ -52,6 +52,24 @@
       "parentUuid": "e28a8300_2e052e19",
       "revId": "d397078a86c0583721b1823e86d06e761a3a6859",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81179089_73320153",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1291594
+      },
+      "writtenOn": "2025-10-22T22:13:12Z",
+      "side": 1,
+      "message": "if you read https://github.com/unicode-org/icu/blame/main/icu4c/source/data/locales/root.txt#L2702\nthe iso8601 section is submitted in https://github.com/unicode-org/icu/commit/c7fe2558be37dd2935dfcbe8b087ca3edd1f3945\nand merged into icu trunk in  on Sep 18, 2024\n\nSo the iso8601 section does not exist. therefore, when ICU format the string for iso8601, it used to use the same one as the default one, which is gregorian\n\nin our filter files \nhttps://source.chromium.org/chromium/chromium/src/+/main:third_party/icu/filters/common.json\nand\nhttps://source.chromium.org/chromium/chromium/src/+/main:third_party/icu/filters/chromeos.json\n\ndo not have a line of \"-/calendar/*\" for the root locale, so all the calendar data are included in the data after the filtering\n\nbut for https://source.chromium.org/chromium/chromium/src/+/main:third_party/icu/filters/android.json\nand other in this cl\nit has the following lines:\n\n    {\n      \"categories\": [\n        \"locales_tree\"\n      ],\n      \"files\": {\n        \"includelist\": [\n\t  \"root\"\n\t]\n      },\n      \"rules\": [\n        \"-/calendar/*\",\n        \"+/calendar/default\",\n        \"+/calendar/gregorian\",\n        \"+/calendar/generic\",\n        \"+/calendar/buddhist\",\n        \"+/calendar/chinese\",\n        \"+/calendar/roc\",\n        \"+/calendar/dangi\",\n        \"+/calendar/ethiopic\",\n        \"+/calendar/ethiopic-amete-alem\",\n        \"+/calendar/japanese\",\n        \"+/calendar/hebrew\",\n        \"+/calendar/islamic\",\n        \"+/calendar/islamic-umalqura\",\n        \"+/calendar/islamic-civil\",\n        \"+/calendar/islamic-tbla\",\n        \"+/calendar/islamic-rgsa\",\n        \"+/calendar/persian\",\n        \"+/calendar/indian\",\n        \n  Maybe we should not do         \"-/calendar/*\", for root at all to include all the elements. Let me rewrite that to make it cleaner",
+      "parentUuid": "b0b1bdc7_580baa56",
+      "revId": "d397078a86c0583721b1823e86d06e761a3a6859",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
