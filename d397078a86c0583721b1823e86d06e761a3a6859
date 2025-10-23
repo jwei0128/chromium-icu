@@ -106,6 +106,24 @@
       "parentUuid": "34084b82_bd5f57c3",
       "revId": "d397078a86c0583721b1823e86d06e761a3a6859",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6dc810d5_71e884af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157920
+      },
+      "writtenOn": "2025-10-23T07:56:53Z",
+      "side": 1,
+      "message": "Thanks for the explanation, LGTM.",
+      "parentUuid": "0f3846e0_91508336",
+      "revId": "d397078a86c0583721b1823e86d06e761a3a6859",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
