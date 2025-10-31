@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b8530b8_a6354718",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1151758
+      },
+      "writtenOn": "2025-10-31T23:34:58Z",
+      "side": 1,
+      "message": "Frank, you forgot to include ulock.patch in the CL.",
+      "revId": "d48b998a68f70b1a80f4a5d3e4636107485993c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
