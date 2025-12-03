@@ -333,21 +333,16 @@ Transliterator* AnyTransliterator::getTransliterator(UScriptCode source) const {
  * Return the script code for a given name, or -1 if not found.
  */
 static UScriptCode scriptNameToCode(const UnicodeString& name) {
-    char buf[128];
-    UScriptCode code;
-    UErrorCode ec = U_ZERO_ERROR;
-    int32_t nameLen = name.length();
-    UBool isInvariant = uprv_isInvariantUString(name.getBuffer(), nameLen);
-
-    if (isInvariant) {
-        name.extract(0, nameLen, buf, static_cast<int32_t>(sizeof(buf)), US_INV);
-        buf[127] = 0;   // Make sure that we nullptr terminate the string.
+    char buf[32];
+    int32_t len = name.length();
+    if (len >= (int32_t)sizeof(buf)) {
+        return USCRIPT_INVALID_CODE;
     }
-    if (!isInvariant || uscript_getCode(buf, &code, 1, &ec) != 1 || U_FAILURE(ec))
-    {
-        code = USCRIPT_INVALID_CODE;
-    }
-    return code;
+    name.extract(0, len, buf, sizeof(buf), US_INV);
+    buf[len] = 0;
+    // Note: It's safe to call u_getPropertyValueEnum because it doesn't
+    // call back into lower-level ICU uloc functions.
+    return (UScriptCode)u_getPropertyValueEnum(UCHAR_SCRIPT, buf);
 }
 
 /**
