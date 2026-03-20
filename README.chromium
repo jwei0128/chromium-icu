@@ -5,7 +5,7 @@ CPEPrefix: cpe:/a:icu-project:international_components_for_unicode:78.2
 License: MIT
 License File: LICENSE
 Security Critical: yes
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/494114589)
 Shipped: yes
 
 Description:
