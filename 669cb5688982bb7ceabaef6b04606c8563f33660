@@ -22,6 +22,30 @@
       },
       "revId": "669cb5688982bb7ceabaef6b04606c8563f33660",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ec6c129_93743b83",
+        "filename": "version.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1375392
+      },
+      "writtenOn": "2026-03-27T17:24:45Z",
+      "side": 1,
+      "message": "The version update script did this, it expected 78-2, but it seems it was given 78.2 or something. Perhaps we should make the usage more lenient\n\nif [ $# -lt 1 ];\nthen\n  echo \"Usage: \"$0\" version (e.g. \u002756-1\u0027)\" \u003e\u00262\n  exit 1\nfi\n\nversion\u003d\"$1\"\n\n# Makes (\"68\" \"1\") from \"68-1\".\nreadonly major_minor_version\u003d(${version//-/ })",
+      "parentUuid": "c0cb9e83_bd081490",
+      "range": {
+        "startLine": 2,
+        "startChar": 20,
+        "endLine": 2,
+        "endChar": 23
+      },
+      "revId": "669cb5688982bb7ceabaef6b04606c8563f33660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
