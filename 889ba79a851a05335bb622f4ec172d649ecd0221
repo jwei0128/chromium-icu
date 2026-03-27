@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e8a8d3a_807b98e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375392
+      },
+      "writtenOn": "2026-03-27T17:59:35Z",
+      "side": 1,
+      "message": "note: I intended the two files to be updated in separate changes, but uploading somehow made them one commit.",
+      "revId": "889ba79a851a05335bb622f4ec172d649ecd0221",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
