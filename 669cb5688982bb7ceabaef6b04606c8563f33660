@@ -70,6 +70,30 @@
       },
       "revId": "669cb5688982bb7ceabaef6b04606c8563f33660",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64cc3e05_89639c1d",
+        "filename": "version.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1130679
+      },
+      "writtenOn": "2026-03-27T20:06:46Z",
+      "side": 1,
+      "message": "The update was done with the script, but the script used to expect the dash, but now the releases on github are named with a dot, that probably caused the script to fail. LGTM\u0027ed the script fix. There is no CQ on ICU, so you might need to manually submit.",
+      "parentUuid": "a5431f61_cb52d1ba",
+      "range": {
+        "startLine": 2,
+        "startChar": 20,
+        "endLine": 2,
+        "endChar": 23
+      },
+      "revId": "669cb5688982bb7ceabaef6b04606c8563f33660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
