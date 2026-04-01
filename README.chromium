@@ -266,3 +266,8 @@ D. Local Modifications
   - crbug.com/475851786
   - https://bugzilla.mozilla.org/show_bug.cgi?id=2010411
   - https://github.com/unicode-org/cldr/pull/5309
+
+13. "GMT+0" in "en-GB" locale
+  - patches/cldr-19362-british-gmt.patch
+  - https://unicode-org.atlassian.net/browse/CLDR-19362
+  - https://github.com/mozilla-firefox/firefox/commit/d9a1061bb178
