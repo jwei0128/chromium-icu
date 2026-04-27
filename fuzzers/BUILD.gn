@@ -38,39 +38,60 @@ fuzzer_test("icu_number_format_fuzzer") {
   sources = [ "icu_number_format_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_break_iterator_fuzzer") {
   sources = [ "icu_break_iterator_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_break_iterator_utf32_fuzzer") {
   sources = [ "icu_break_iterator_utf32_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_ucasemap_fuzzer") {
   sources = [ "icu_ucasemap_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_to_case_fuzzer") {
   sources = [ "icu_to_case_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_converter_fuzzer") {
   sources = [ "icu_converter_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   libfuzzer_options = [ "max_len=10240" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("icu_appendable_fuzzer") {
   sources = [ "icu_appendable_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
