@@ -84,6 +84,24 @@
       "message": "Let\u0027s add `icu_assets` as a dep once here instead of many places below, since this is the code that defines `IcuEnvironment`.",
       "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "727c8a59_1a4fea35",
+        "filename": "fuzzers/BUILD.gn",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T12:31:54Z",
+      "side": 1,
+      "message": "See https://chromium-review.git.corp.google.com/c/chromium/src/+/7759418/comment/6d630b6a_c4118a88/",
+      "parentUuid": "21a3ba02_dcbb098a",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
