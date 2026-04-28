@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "73f1f13b_0877b126",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T10:16:35Z",
+      "side": 1,
+      "message": "```suggestion\n[Fuzzing] Fix ICU deps and initialization.\n```",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0c780cd_817605c4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T10:16:35Z",
+      "side": 1,
+      "message": "```suggestion\nan APK execution. Due to how the JVM initializes variables if\n```",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5963d88_3e15e059",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T10:16:35Z",
+      "side": 1,
+      "message": "```suggestion\ncan be used during execution on android.\n```",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e700b15_3e369454",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T10:16:35Z",
+      "side": 1,
+      "message": "LGTM % changes below.",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21a3ba02_dcbb098a",
+        "filename": "fuzzers/BUILD.gn",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-28T10:16:35Z",
+      "side": 1,
+      "message": "Let\u0027s add `icu_assets` as a dep once here instead of many places below, since this is the code that defines `IcuEnvironment`.",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
