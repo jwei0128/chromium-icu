@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dcb82c8c_7b0bae46",
+        "filename": "fuzzers/icu_appendable_fuzzer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4611310
+      },
+      "writtenOn": "2026-04-29T00:33:55Z",
+      "side": 1,
+      "message": "It worths mentioning that here if I use `base::NoDestructor` I get this error: ```In file included from ../../third_party/icu/fuzzers/icu_appendable_fuzzer.cc:7:\n../../base/no_destructor.h:91:7: error: static assertion failed due to requirement \u0027!std::is_trivially_destructible_v\u003cIcuEnvironment\u003e\u0027: T is trivially destructible; please use a function-local static of type T directly instead\n   91 |       !std::is_trivially_destructible_v\u003cT\u003e,\n      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n../../third_party/icu/fuzzers/icu_appendable_fuzzer.cc:30:51: note: in instantiation of template class \u0027base::NoDestructor\u003cIcuEnvironment\u003e\u0027 requested here\n   30 |   static const base::NoDestructor\u003cIcuEnvironment\u003e env;```\n   \n   This is because `IcuEnvironment` is trivially destructible here because it doesn\u0027t define `base::AtExitManager`. Should I look for a standardization for IcuEnvironment, with or without AtExitManager?",
+      "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
