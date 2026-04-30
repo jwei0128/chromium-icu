@@ -192,6 +192,24 @@
       "parentUuid": "597652c5_7a8c3be2",
       "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1587c156_9a2074fd",
+        "filename": "fuzzers/BUILD.gn",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-30T09:14:31Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "597652c5_7a8c3be2",
+      "revId": "45d909a5cc7d3faac333eaf351d28da1b5bd6a37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

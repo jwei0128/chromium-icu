@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "940d4f7c_ff74c3a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-30T09:14:31Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dcb82c8c_7b0bae46",
@@ -48,6 +65,24 @@
       "writtenOn": "2026-04-30T09:08:25Z",
       "side": 1,
       "message": "If this works, let\u0027s leave it alone.\n\nIt does seem somewhat worthwile to define `IcuEnvironment` somewhere central and re-use it in fuzzers all over. If you feel like it, happy to review your CL!",
+      "parentUuid": "dcb82c8c_7b0bae46",
+      "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc1442ce_e4278c0b",
+        "filename": "fuzzers/icu_appendable_fuzzer.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-04-30T09:14:31Z",
+      "side": 1,
+      "message": "This is fine.\n\nSee https://chromium-review.git.corp.google.com/c/chromium/deps/icu/+/7797883/comment/dcb82c8c_7b0bae46/",
       "parentUuid": "dcb82c8c_7b0bae46",
       "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
