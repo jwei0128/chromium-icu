@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52453ba3_b2f2bc8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4611310
+      },
+      "writtenOn": "2026-05-12T23:28:06Z",
+      "side": 1,
+      "message": "titouan@chromium.org\n\nCould you submit this CL to the CQ, for some reason I don\u0027t have permissions to do so.\n\nI was waiting to merge the centralized dependency, but I now realize this is in a separate repo, so I think they shouldn\u0027t depend on //base",
+      "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dcb82c8c_7b0bae46",
