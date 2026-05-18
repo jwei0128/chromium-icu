@@ -54,6 +54,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6a221fcf_0094438d",
+        "filename": "fuzzers/BUILD.gn",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-05-18T08:54:24Z",
+      "side": 1,
+      "message": "There\u0027s an existing `//base` dependency here, so I think we can use `//base:icu_fuzzer_environment` for these fuzzers.",
+      "revId": "33fccb9565002fd1b0eb655c2e03eb01941cd334",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dcb82c8c_7b0bae46",
         "filename": "fuzzers/icu_appendable_fuzzer.cc",
         "patchSetId": 2
