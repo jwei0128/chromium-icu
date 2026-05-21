@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c20849ad_fed4af33",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-05-21T12:25:44Z",
+      "side": 1,
+      "message": "```suggestion\n[Fuzzing] Fix ICU initialization.\n\nMove environment initialization so it is handled correctly from\nan APK execution. Due to how the JVM initializes variables if\nthe environment is defined outside LLVMFuzzer initialization\nit crashes.\n```",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 40
+      },
+      "revId": "3fc43d5221ff2193a96cd3332c7f9d59163a6c22",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "04bc1c9a_650f8ca5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431447
+      },
+      "writtenOn": "2026-05-21T12:25:44Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "3fc43d5221ff2193a96cd3332c7f9d59163a6c22",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
