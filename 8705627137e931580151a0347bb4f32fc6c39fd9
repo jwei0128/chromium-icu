@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab797989_e5d4fb85",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2026-06-02T04:56:07Z",
+      "side": 1,
+      "message": "Can you link to an issue? The reported one, the ICU upgrade one, or a new one?",
+      "revId": "8705627137e931580151a0347bb4f32fc6c39fd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "daf896d5_4a652716",
