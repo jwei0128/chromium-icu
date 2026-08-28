@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/features.gni")
 import("//build/config/host_byteorder.gni")
 import("config.gni")
@@ -126,7 +127,8 @@ config("icu_code") {
       # putil.cpp contains unused variables when building for iOS simulators.
       "-Wno-unused-variable",
 
-      # Required for uversion.h putting a using namespace directive in the header.
+      # Required for uversion.h putting a using namespace directive in the
+      # header.
       "-Wno-header-hygiene",
 
       # ICU has decided not to fix this warning as doing so would break its
@@ -253,8 +255,9 @@ template("generate_icu_component") {
           base_output_name = invoker.output_name
         }
 
-        # Fuchsia puts its own libicu*.so in /system/lib where we need to put our
-        # .so when doing component builds, so we need to give this a different name.
+        # Fuchsia puts its own libicu*.so in /system/lib where we need to put
+        # our .so when doing component builds, so we need to give this a
+        # different name.
         output_name = "${base_output_name}_cr${fuchsia_output_name_postfix}"
       } else {
         assert(fuchsia_output_name_postfix == "")
@@ -438,7 +441,9 @@ if (is_android && enable_java_templates) {
   }
 }
 
-if (is_android) {
+if (is_castos || is_cast_android || enable_cast_receiver) {
+  data_dir = "cast"
+} else if (is_android) {
   data_dir = "android"
 } else if (is_ios && !use_blink) {
   data_dir = "ios"
