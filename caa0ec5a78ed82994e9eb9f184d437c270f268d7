@@ -16,6 +16,23 @@
       "message": "kojii@, would you stamp this please?",
       "revId": "caa0ec5a78ed82994e9eb9f184d437c270f268d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b057b853_dad30082",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2026-09-24T05:30:52Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "caa0ec5a78ed82994e9eb9f184d437c270f268d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
