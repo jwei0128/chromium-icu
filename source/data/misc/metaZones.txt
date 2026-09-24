@@ -1582,8 +1582,6 @@ metaZones:table(nofallback){
         "America:Coyhaique"{
             {
                 "Chile",
-                "1970-01-01 00:00",
-                "2025-03-20 03:00",
             }
         }
         "America:Creston"{
@@ -2298,8 +2296,6 @@ metaZones:table(nofallback){
         "America:Punta_Arenas"{
             {
                 "Chile",
-                "1970-01-01 00:00",
-                "2016-12-03 23:00",
             }
         }
         "America:Rankin_Inlet"{
