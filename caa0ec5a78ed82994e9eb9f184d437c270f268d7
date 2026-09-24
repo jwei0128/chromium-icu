@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1acfe596_24d460b8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116047
+      },
+      "writtenOn": "2026-09-24T01:46:38Z",
+      "side": 1,
+      "message": "kojii@, would you stamp this please?",
+      "revId": "caa0ec5a78ed82994e9eb9f184d437c270f268d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
