@@ -208,7 +208,7 @@ D. Local Modifications
     bug: https://crbug.com/381620359
     (scripts/update_tz.sh offers to perform this patch automatically)
 
-  As of Sep 24, 2026, the latest version is 2026d
+  As of Oct 6, 2026, the latest version is 2026e
   and the above files are available at the ICU github repos.
   Compare: https://lists.iana.org/hyperkitty/list/tz-announce@iana.org/thread/L4IGHJRBUQR53F7RTEHM5IS7ZMBR3YXP/
 
