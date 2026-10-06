@@ -16,6 +16,23 @@
       "message": "kojii@, would you review this please?",
       "revId": "28149e7f38f87b0ef59fe5a60db8582b47eebabc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f39f7b0e_0dad777e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2026-10-06T09:06:32Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "28149e7f38f87b0ef59fe5a60db8582b47eebabc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
