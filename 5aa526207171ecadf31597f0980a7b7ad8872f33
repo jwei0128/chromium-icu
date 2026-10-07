@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35042c7f_cbe79646",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375392
+      },
+      "writtenOn": "2026-10-07T16:56:03Z",
+      "side": 1,
+      "message": "Note for posterity, by inspection this is, in fact tzdb edition 202*6*d.",
+      "revId": "5aa526207171ecadf31597f0980a7b7ad8872f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
