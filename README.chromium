@@ -270,3 +270,7 @@ D. Local Modifications
 13. Missing long name in iso8601 calendar.
     https://unicode-org.atlassian.net/browse/ICU-23262
   - patches/missing_iso8601_resource.patch
+
+14. Reuse cached NumberingSystem in NumberFormat::makeInstance and
+    NumberFormatterImpl::macrosToMicroGenerator.
+  - patches/reuse_numbering_system.patch
