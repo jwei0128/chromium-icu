@@ -278,3 +278,7 @@ D. Local Modifications
 15. Skip currency bundle loading in DecimalFormatSymbols for non-currency
     NumberFormat styles.
   - patches/skip_currency_for_non_currency.patch
+
+16. Avoid holding resbMutex during UResourceDataEntry refcount updates and
+    res_load().
+  - patches/resb_mutex.patch
