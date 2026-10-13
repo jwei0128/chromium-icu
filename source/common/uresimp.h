@@ -37,6 +37,16 @@
 struct UResourceDataEntry;
 typedef struct UResourceDataEntry UResourceDataEntry;
 
+#define RES_BUFSIZE 64
+#define RES_PATH_SEPARATOR   '/'
+#define RES_PATH_SEPARATOR_S   "/"
+
+U_CAPI void U_EXPORT2 ures_initStackObject(UResourceBundle* resB);
+
+#ifdef __cplusplus
+
+#include "umutex.h"
+
 /*
  * Note: If we wanted to make this structure smaller, then we could try
  * to use one UResourceDataEntry pointer for fAlias and fPool, with a separate
@@ -46,23 +56,15 @@ typedef struct UResourceDataEntry UResourceDataEntry;
 struct UResourceDataEntry {
     char *fName; /* name of the locale for bundle - still to decide whether it is original or fallback */
     char *fPath; /* path to bundle - used for distinguishing between resources with the same name */
-    UResourceDataEntry *fParent; /*next resource in fallback chain*/
+    std::atomic<UResourceDataEntry *> fParent; /*next resource in fallback chain*/
     UResourceDataEntry *fAlias;
     UResourceDataEntry *fPool;
     ResourceData fData; /* data for low level access */
     char fNameBuffer[3]; /* A small buffer of free space for fName. The free space is due to struct padding. */
-    uint32_t fCountExisting; /* how much is this resource used */
+    icu::u_atomic_int32_t fCountExisting; /* how much is this resource used */
     UErrorCode fBogus;
     /* int32_t fHashKey;*/ /* for faster access in the hashtable */
 };
-
-#define RES_BUFSIZE 64
-#define RES_PATH_SEPARATOR   '/'
-#define RES_PATH_SEPARATOR_S   "/"
-
-U_CAPI void U_EXPORT2 ures_initStackObject(UResourceBundle* resB);
-
-#ifdef __cplusplus
 
 struct UResourceBundle {
     const char *fKey; /*tag*/
