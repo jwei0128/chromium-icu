@@ -207,6 +207,20 @@ public:
      */
     U_I18N_API DecimalFormatSymbols(const Locale& locale, const NumberingSystem& ns, UErrorCode& status);
 
+#ifndef U_HIDE_INTERNAL_API
+    /**
+     * Creates a DecimalFormatSymbols instance for the given locale and
+     * NumberingSystem, optionally skipping currency bundle loading when
+     * formatting non-currency numbers.
+     *
+     * @internal
+     */
+    U_I18N_API DecimalFormatSymbols(const Locale& locale,
+                                    const NumberingSystem& ns,
+                                    UBool loadCurrencyData,
+                                    UErrorCode& status);
+#endif  // U_HIDE_INTERNAL_API
+
     /**
      * Create a DecimalFormatSymbols object for the default locale.
      * This constructor will not fail.  If the resource file data is
@@ -308,6 +322,21 @@ public:
      * @internal
      */
     U_I18N_API void setCurrency(const char16_t* currency, UErrorCode& status);
+
+    /**
+     * Loads the default currency symbols and currency spacing patterns for
+     * `locale` if they were not loaded during construction.
+     *
+     * @internal
+     */
+    U_I18N_API void loadCurrencyData(UErrorCode& status);
+
+    /**
+     * Loads currency spacing patterns for `locale`.
+     *
+     * @internal
+     */
+    U_I18N_API void loadCurrencySpacing(UErrorCode& status);
 #endif  // U_HIDE_INTERNAL_API
 
     /**
@@ -385,14 +414,24 @@ private:
      * @param useLastResortData    determine if use last resort data
      * @param ns                   The NumberingSystem to use; otherwise, fall
      *                             back to the locale.
+     * @param loadCurrency         Whether to load currency symbols and spacing
+     *                             patterns now; otherwise, they are loaded
+     *                             lazily on demand.
      */
     void initialize(const Locale& locale, UErrorCode& success,
-                    UBool useLastResortData = false, const NumberingSystem* ns = nullptr);
+                    UBool useLastResortData = false,
+                    const NumberingSystem* ns = nullptr,
+                    UBool loadCurrency = true);
 
     /**
      * Initialize the symbols with default values.
      */
     void initialize();
+
+    /**
+     * Lazily loads currency symbols and spacing patterns if not already loaded.
+     */
+    U_I18N_API void ensureCurrencyDataLoaded() const;
 
 public:
 
@@ -515,6 +554,7 @@ private:
     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
     UBool fIsCustomCurrencySymbol;
     UBool fIsCustomIntlCurrencySymbol;
+    UBool fIsCurrencyDataLoaded = false;
     char nsName[kInternalNumSysNameCapacity+1] = {};
 };
 
@@ -522,13 +562,7 @@ private:
 
 inline UnicodeString
 DecimalFormatSymbols::getSymbol(ENumberFormatSymbol symbol) const {
-    const UnicodeString *strPtr;
-    if(symbol < kFormatSymbolCount) {
-        strPtr = &fSymbols[symbol];
-    } else {
-        strPtr = &fNoSymbol;
-    }
-    return *strPtr;
+    return getConstSymbol(symbol);
 }
 
 // See comments above for this function. Not hidden with #ifdef U_HIDE_INTERNAL_API
@@ -536,6 +570,11 @@ inline const UnicodeString &
 DecimalFormatSymbols::getConstSymbol(ENumberFormatSymbol symbol) const {
     const UnicodeString *strPtr;
     if(symbol < kFormatSymbolCount) {
+        if (symbol == kCurrencySymbol || symbol == kIntlCurrencySymbol ||
+            symbol == kMonetarySeparatorSymbol ||
+            symbol == kMonetaryGroupingSeparatorSymbol) {
+            ensureCurrencyDataLoaded();
+        }
         strPtr = &fSymbols[symbol];
     } else {
         strPtr = &fNoSymbol;
@@ -560,6 +599,11 @@ inline const UnicodeString& DecimalFormatSymbols::getConstDigitSymbol(int32_t di
 
 inline void
 DecimalFormatSymbols::setSymbol(ENumberFormatSymbol symbol, const UnicodeString &value, const UBool propagateDigits = true) {
+    if (symbol == kCurrencySymbol || symbol == kIntlCurrencySymbol ||
+        symbol == kMonetarySeparatorSymbol ||
+        symbol == kMonetaryGroupingSeparatorSymbol) {
+        ensureCurrencyDataLoaded();
+    }
     if (symbol == kCurrencySymbol) {
         fIsCustomCurrencySymbol = true;
     }
@@ -599,6 +643,7 @@ DecimalFormatSymbols::getLocale() const {
 #ifndef U_HIDE_INTERNAL_API
 inline const char16_t*
 DecimalFormatSymbols::getCurrencyPattern() const {
+    ensureCurrencyDataLoaded();
     return currPattern;
 }
 inline const char*
