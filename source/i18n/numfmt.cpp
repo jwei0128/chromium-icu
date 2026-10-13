@@ -1405,8 +1405,10 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
         return nullptr;
     }
     else {
-        // Loads the decimal symbols of the desired locale.
-        symbolsToAdopt.adoptInsteadAndCheckErrorCode(new DecimalFormatSymbols(desiredLocale, status), status);
+        // Loads the decimal symbols of the desired locale. Pass `*ns` to avoid
+        // a redundant uncached `NumberingSystem::createInstance()` lookup.
+        symbolsToAdopt.adoptInsteadAndCheckErrorCode(
+            new DecimalFormatSymbols(desiredLocale, *ns, status), status);
         if (U_FAILURE(status)) {
             return nullptr;
         }
