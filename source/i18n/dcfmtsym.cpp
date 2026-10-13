@@ -116,6 +116,14 @@ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, const NumberingSys
     initialize(locale, status, false, &ns);
 }
 
+DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc,
+                                           const NumberingSystem& ns,
+                                           UBool loadCurrencyData,
+                                           UErrorCode& status)
+        : UObject(), locale(loc) {
+    initialize(locale, status, false, &ns, loadCurrencyData);
+}
+
 DecimalFormatSymbols::DecimalFormatSymbols()
     : UObject(),
       locale(Locale::getRoot()),
@@ -169,6 +177,7 @@ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
         validLocale = rhs.validLocale;
         fIsCustomCurrencySymbol = rhs.fIsCustomCurrencySymbol; 
         fIsCustomIntlCurrencySymbol = rhs.fIsCustomIntlCurrencySymbol; 
+        fIsCurrencyDataLoaded = rhs.fIsCurrencyDataLoaded;
         fCodePointZero = rhs.fCodePointZero;
         currPattern = rhs.currPattern;
         uprv_strcpy(nsName, rhs.nsName);
@@ -352,7 +361,7 @@ CurrencySpacingSink::~CurrencySpacingSink() {}
 
 void
 DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
-    UBool useLastResortData, const NumberingSystem* ns)
+    UBool useLastResortData, const NumberingSystem* ns, UBool loadCurrency)
 {
     if (U_FAILURE(status)) { return; }
 
@@ -456,23 +465,45 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
     }
     fCodePointZero = tempCodePointZero;
 
+    if (loadCurrency) {
+        loadCurrencyData(status);
+    }
+}
+
+void DecimalFormatSymbols::loadCurrencyData(UErrorCode& status) {
+    if (U_FAILURE(status) || fIsCurrencyDataLoaded) {
+        return;
+    }
+    const char* locStr = locale.getName();
+
     // Get the default currency from the currency API.
     UErrorCode internalStatus = U_ZERO_ERROR; // don't propagate failures out
     char16_t curriso[4];
-    UnicodeString tempStr;
-    int32_t currisoLength = ucurr_forLocale(locStr, curriso, UPRV_LENGTHOF(curriso), &internalStatus);
+    int32_t currisoLength =
+        ucurr_forLocale(locStr, curriso, UPRV_LENGTHOF(curriso), &internalStatus);
     if (U_SUCCESS(internalStatus) && currisoLength == 3) {
         setCurrency(curriso, status);
     } else {
         setCurrency(nullptr, status);
     }
 
+    loadCurrencySpacing(status);
+    if (U_SUCCESS(status)) {
+        fIsCurrencyDataLoaded = true;
+    }
+}
+
+void DecimalFormatSymbols::loadCurrencySpacing(UErrorCode& status) {
+    if (U_FAILURE(status) || fIsCurrencyDataLoaded) {
+        return;
+    }
     // Currency Spacing.
-    LocalUResourceBundlePointer currencyResource(ures_open(U_ICUDATA_CURR, locStr, &status));
+    LocalUResourceBundlePointer currencyResource(
+        ures_open(U_ICUDATA_CURR, locale.getName(), &status));
     CurrencySpacingSink currencySink(*this);
-    ures_getAllItemsWithFallback(currencyResource.getAlias(), gCurrencySpacingTag, currencySink, status);
+    ures_getAllItemsWithFallback(
+        currencyResource.getAlias(), gCurrencySpacingTag, currencySink, status);
     currencySink.resolveMissing();
-    if (U_FAILURE(status)) { return; }
 }
 
 void
@@ -513,6 +544,7 @@ DecimalFormatSymbols::initialize() {
     fSymbols[kApproximatelySignSymbol] = u'~';          // '~' approximately sign
     fIsCustomCurrencySymbol = false; 
     fIsCustomIntlCurrencySymbol = false;
+    fIsCurrencyDataLoaded = false;
     fCodePointZero = 0x30;
     U_ASSERT(fCodePointZero == fSymbols[kZeroDigitSymbol].char32At(0));
     currPattern = nullptr;

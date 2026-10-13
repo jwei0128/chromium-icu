@@ -207,6 +207,20 @@ public:
      */
     U_I18N_API DecimalFormatSymbols(const Locale& locale, const NumberingSystem& ns, UErrorCode& status);
 
+#ifndef U_HIDE_INTERNAL_API
+    /**
+     * Creates a DecimalFormatSymbols instance for the given locale and
+     * NumberingSystem, optionally skipping currency bundle loading when
+     * formatting non-currency numbers.
+     *
+     * @internal
+     */
+    U_I18N_API DecimalFormatSymbols(const Locale& locale,
+                                    const NumberingSystem& ns,
+                                    UBool loadCurrencyData,
+                                    UErrorCode& status);
+#endif  // U_HIDE_INTERNAL_API
+
     /**
      * Create a DecimalFormatSymbols object for the default locale.
      * This constructor will not fail.  If the resource file data is
@@ -308,6 +322,30 @@ public:
      * @internal
      */
     U_I18N_API void setCurrency(const char16_t* currency, UErrorCode& status);
+
+    /**
+     * Loads the default currency symbols and currency spacing patterns for
+     * `locale` if they were not loaded during construction.
+     *
+     * @internal
+     */
+    U_I18N_API void loadCurrencyData(UErrorCode& status);
+
+    /**
+     * Loads currency spacing patterns for `locale`.
+     *
+     * @internal
+     */
+    U_I18N_API void loadCurrencySpacing(UErrorCode& status);
+
+    /**
+     * Returns whether currency symbols and spacing patterns have been loaded.
+     *
+     * @internal
+     */
+    U_I18N_API inline UBool isCurrencyDataLoaded() const {
+        return fIsCurrencyDataLoaded;
+    }
 #endif  // U_HIDE_INTERNAL_API
 
     /**
@@ -387,7 +425,9 @@ private:
      *                             back to the locale.
      */
     void initialize(const Locale& locale, UErrorCode& success,
-                    UBool useLastResortData = false, const NumberingSystem* ns = nullptr);
+                    UBool useLastResortData = false,
+                    const NumberingSystem* ns = nullptr,
+                    UBool loadCurrency = true);
 
     /**
      * Initialize the symbols with default values.
@@ -515,6 +555,7 @@ private:
     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
     UBool fIsCustomCurrencySymbol;
     UBool fIsCustomIntlCurrencySymbol;
+    UBool fIsCurrencyDataLoaded = false;
     char nsName[kInternalNumSysNameCapacity+1] = {};
 };
 

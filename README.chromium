@@ -274,3 +274,7 @@ D. Local Modifications
 14. Reuse cached NumberingSystem in NumberFormat::makeInstance and
     NumberFormatterImpl::macrosToMicroGenerator.
   - patches/reuse_numbering_system.patch
+
+15. Skip currency bundle loading in DecimalFormatSymbols for non-currency
+    NumberFormat styles.
+  - patches/skip_currency_for_non_currency.patch
