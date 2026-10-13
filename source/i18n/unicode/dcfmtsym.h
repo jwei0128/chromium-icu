@@ -207,6 +207,19 @@ public:
      */
     U_I18N_API DecimalFormatSymbols(const Locale& locale, const NumberingSystem& ns, UErrorCode& status);
 
+#ifndef U_HIDE_INTERNAL_API
+    /**
+     * Creates a DecimalFormatSymbols instance for the given locale using that
+     * locale's already-resolved default NumberingSystem.
+     *
+     * @internal
+     */
+    U_I18N_API static DecimalFormatSymbols* createForLocale(
+        const Locale& locale,
+        const NumberingSystem& ns,
+        UErrorCode& status);
+#endif  // U_HIDE_INTERNAL_API
+
     /**
      * Create a DecimalFormatSymbols object for the default locale.
      * This constructor will not fail.  If the resource file data is
@@ -387,12 +400,19 @@ private:
      *                             back to the locale.
      */
     void initialize(const Locale& locale, UErrorCode& success,
-                    UBool useLastResortData = false, const NumberingSystem* ns = nullptr);
+                    UBool useLastResortData = false,
+                    const NumberingSystem* ns = nullptr,
+                    UBool isLocaleDefaultNs = true);
 
     /**
      * Initialize the symbols with default values.
      */
     void initialize();
+
+    DecimalFormatSymbols(const Locale& locale,
+                         const NumberingSystem& ns,
+                         UBool isLocaleDefaultNs,
+                         UErrorCode& status);
 
 public:
 
@@ -465,6 +485,16 @@ public:
      * @internal
      */
     U_I18N_API inline const char* getNumberingSystemName() const;
+
+    /**
+     * Returns true if this instance was initialized with `locale`'s default
+     * numbering system and that numbering system is a radix-10 non-algorithmic
+     * numbering system.
+     * @internal
+     */
+    U_I18N_API inline UBool isLocaleDefaultNumberingSystem() const {
+        return fIsLocaleDefaultNumberingSystem;
+    }
 #endif  /* U_HIDE_INTERNAL_API */
 
 private:
@@ -515,6 +545,7 @@ private:
     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
     UBool fIsCustomCurrencySymbol;
     UBool fIsCustomIntlCurrencySymbol;
+    UBool fIsLocaleDefaultNumberingSystem = false;
     char nsName[kInternalNumSysNameCapacity+1] = {};
 };
 
