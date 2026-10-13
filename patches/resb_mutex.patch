@@ -1,0 +1,280 @@
+diff --git a/source/common/uresbund.cpp b/source/common/uresbund.cpp
+index afda2770f..08c350320 100644
+--- a/source/common/uresbund.cpp
++++ b/source/common/uresbund.cpp
+@@ -302,7 +302,6 @@ static UBool mayHaveParent(char *name) {
+  *  Internal function
+  */
+ static void entryIncrease(UResourceDataEntry *entry) {
+-    Mutex lock(&resbMutex);
+     entry->fCountExisting++;
+     while(entry->fParent != nullptr) {
+       entry = entry->fParent;
+@@ -448,7 +447,7 @@ U_CAPI UBool U_EXPORT2 ures_dumpCacheContents() {
+       resB = (UResourceDataEntry *) e->value.pointer;
+       fprintf(stderr,"%s:%d: RB Cache: Entry @0x%p, refcount %d, name %s:%s.  Pool 0x%p, alias 0x%p, parent 0x%p\n",
+               __FILE__, __LINE__,
+-              (void*)resB, resB->fCountExisting,
++              (void*)resB, resB->fCountExisting.load(),
+               resB->fName?resB->fName:"nullptr",
+               resB->fPath?resB->fPath:"nullptr",
+               (void*)resB->fPool,
+@@ -570,7 +569,15 @@ static UResourceDataEntry *init_entry(const char *localeID, const char *path, UE
+         }
+ 
+         /* this is the actual loading */
+-        res_load(&(r->fData), r->fPath, r->fName, status);
++        {
++            // Release `resbMutex` while loading the resource from `icudtl.dat`
++            // so hard page faults on cold data pages do not block other
++            // threads. Duplicate insertion after re-acquiring `resbMutex` is
++            // handled via `uhash_get(cache, r)` below.
++            umtx_unlock(&resbMutex);
++            res_load(&(r->fData), r->fPath, r->fName, status);
++            umtx_lock(&resbMutex);
++        }
+ 
+         if (U_FAILURE(*status)) {
+             /* if we failed to load due to an out-of-memory error, exit early. */
+@@ -606,7 +613,7 @@ static UResourceDataEntry *init_entry(const char *localeID, const char *path, UE
+                     const char16_t *alias = res_getStringNoTrace(&(r->fData), aliasres, &aliasLen);
+                     if(alias != nullptr && aliasLen > 0) { /* if there is actual alias - unload and load new data */
+                         u_UCharsToChars(alias, aliasName, aliasLen+1);
+-                        r->fAlias = init_entry(aliasName, path, status);
++                        r->fAlias = init_entry(aliasName, r->fPath, status);
+                     }
+                 }
+             }
+@@ -740,10 +747,44 @@ StackUResourceBundle::~StackUResourceBundle() {
+ 
+ U_NAMESPACE_END
+ 
++namespace {
++
++// Collects unlinked parent entries while loading them so that `fParent`
++// pointers can be linked bottom-up (from `root` up to the child entry) under
++// `resbMutex` after all `init_entry()` calls complete. This guarantees that
++// any entry in `cache` with `fParent != nullptr` already has its complete
++// ancestor chain up to `root` linked, even though `init_entry()` releases
++// `resbMutex` during `res_load()`.
++struct ParentChain {
++    UResourceDataEntry *entries[ULOC_FULLNAME_CAPACITY];
++    int32_t length = 0;
++
++    void reset(UResourceDataEntry *head) {
++        entries[0] = head;
++        length = 1;
++    }
++
++    void push(UResourceDataEntry *entry) {
++        U_ASSERT(length < ULOC_FULLNAME_CAPACITY);
++        entries[length++] = entry;
++    }
++
++    void linkBottomUp() {
++        for (int32_t i = length - 2; i >= 0; --i) {
++            if (entries[i]->fParent == nullptr) {
++                entries[i]->fParent = entries[i + 1];
++            }
++        }
++    }
++};
++
++}  // namespace
++
+ static UBool  // returns U_SUCCESS(*status)
+ loadParentsExceptRoot(UResourceDataEntry *&t1,
+                       char name[], int32_t nameCapacity,
+-                      UBool usingUSRData, char usrDataPath[], UErrorCode *status) {
++                      UBool usingUSRData, char usrDataPath[],
++                      ParentChain &chain, UErrorCode *status) {
+     if (U_FAILURE(*status)) { return false; }
+     UBool checkParent = true;
+     while (checkParent && t1->fParent == nullptr && !t1->fData.noFallback &&
+@@ -779,10 +820,10 @@ loadParentsExceptRoot(UResourceDataEntry *&t1,
+         }
+ 
+         if (usingUSRData && U_SUCCESS(usrStatus) && u2->fBogus == U_ZERO_ERROR) {
+-            t1->fParent = u2;
+-            u2->fParent = t2;
++            chain.push(u2);
++            chain.push(t2);
+         } else {
+-            t1->fParent = t2;
++            chain.push(t2);
+             if (usingUSRData) {
+                 // The USR override data wasn't found, set it to be deleted.
+                 u2->fCountExisting = 0;
+@@ -795,7 +836,7 @@ loadParentsExceptRoot(UResourceDataEntry *&t1,
+ }
+ 
+ static UBool  // returns U_SUCCESS(*status)
+-insertRootBundle(UResourceDataEntry *&t1, UErrorCode *status) {
++insertRootBundle(UResourceDataEntry *&t1, ParentChain &chain, UErrorCode *status) {
+     if (U_FAILURE(*status)) { return false; }
+     UErrorCode parentStatus = U_ZERO_ERROR;
+     UResourceDataEntry *t2 = init_entry(kRootLocaleName, t1->fPath, &parentStatus);
+@@ -803,7 +844,7 @@ insertRootBundle(UResourceDataEntry *&t1, UErrorCode *status) {
+         *status = parentStatus;
+         return false;
+     }
+-    t1->fParent = t2;
++    chain.push(t2);
+     t1 = t2;
+     return true;
+ }
+@@ -848,6 +889,7 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+     const char *defaultLocale = uloc_getDefault();
+ 
+     Mutex lock(&resbMutex);    // Lock resbMutex until the end of this function.
++    ParentChain chain;
+ 
+     /* We're going to skip all the locales that do not have any data */
+     r = findFirstExisting(path, name, defaultLocale, openType, &isRoot, &hasChopped, &isDefault, &intStatus);
+@@ -860,6 +902,7 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+ 
+     if(r != nullptr) { /* if there is one real locale, we can look for parents. */
+         t1 = r;
++        chain.reset(t1);
+         hasRealData = true;
+         if ( usingUSRData ) {  /* This code inserts user override data into the inheritance chain */
+             UErrorCode usrStatus = U_ZERO_ERROR;
+@@ -871,8 +914,9 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+             }
+             if ( u1 != nullptr ) {
+                 if(u1->fBogus == U_ZERO_ERROR) {
+-                    u1->fParent = t1;
+                     r = u1;
++                    chain.reset(r);
++                    chain.push(t1);
+                 } else {
+                     /* the USR override data wasn't found, set it to be deleted */
+                     u1->fCountExisting = 0;
+@@ -880,7 +924,7 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+             }
+         }
+         if ((hasChopped || mayHaveParent(name)) && !isRoot) {
+-            if (!loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), usingUSRData, usrDataPath, status)) {
++            if (!loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), usingUSRData, usrDataPath, chain, status)) {
+                 goto finish;
+             }
+         }
+@@ -900,11 +944,12 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+         intStatus = U_USING_DEFAULT_WARNING;
+         if(r != nullptr) { /* the default locale exists */
+             t1 = r;
++            chain.reset(t1);
+             hasRealData = true;
+             isDefault = true;
+             // TODO: Why not if (usingUSRData) { ... } like in the non-default-locale code path?
+             if ((hasChopped || mayHaveParent(name)) && !isRoot) {
+-                if (!loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), usingUSRData, usrDataPath, status)) {
++                if (!loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), usingUSRData, usrDataPath, chain, status)) {
+                     goto finish;
+                 }
+             }
+@@ -923,6 +968,7 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+         }
+         if(r != nullptr) {
+             t1 = r;
++            chain.reset(t1);
+             intStatus = U_USING_DEFAULT_WARNING;
+             hasRealData = true;
+         } else { /* we don't even have the root locale */
+@@ -931,13 +977,14 @@ static UResourceDataEntry *entryOpen(const char* path, const char* localeID,
+         }
+     } else if(!isRoot && uprv_strcmp(t1->fName, kRootLocaleName) != 0 &&
+             t1->fParent == nullptr && !r->fData.noFallback) {
+-        if (!insertRootBundle(t1, status)) {
++        if (!insertRootBundle(t1, chain, status)) {
+             goto finish;
+         }
+         if(!hasRealData) {
+             r->fBogus = U_USING_DEFAULT_WARNING;
+         }
+     }
++    chain.linkBottomUp();
+ 
+     // TODO: Does this ever loop?
+     while(r != nullptr && !isRoot && t1->fParent != nullptr) {
+@@ -997,16 +1044,20 @@ entryOpenDirect(const char* path, const char* localeID, UErrorCode* status) {
+     if(r != nullptr && uprv_strcmp(localeID, kRootLocaleName) != 0 &&  // not root
+             r->fParent == nullptr && !r->fData.noFallback &&
+             uprv_strlen(localeID) < ULOC_FULLNAME_CAPACITY) {
++        ParentChain chain;
++        chain.reset(t1);
+         char name[ULOC_FULLNAME_CAPACITY];
+         uprv_strcpy(name, localeID);
+         if(!chopLocale(name) || uprv_strcmp(name, kRootLocaleName) == 0 ||
+-                loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), false, nullptr, status)) {
++                loadParentsExceptRoot(t1, name, UPRV_LENGTHOF(name), false, nullptr, chain, status)) {
+             if(uprv_strcmp(t1->fName, kRootLocaleName) != 0 && t1->fParent == nullptr) {
+-                insertRootBundle(t1, status);
++                insertRootBundle(t1, chain, status);
+             }
+         }
+         if(U_FAILURE(*status)) {
+             r = nullptr;
++        } else {
++            chain.linkBottomUp();
+         }
+     }
+ 
+@@ -1022,7 +1073,6 @@ entryOpenDirect(const char* path, const char* localeID, UErrorCode* status) {
+ 
+ /**
+  * Functions to create and destroy resource bundles.
+- *     CAUTION:  resbMutex must be locked when calling this function.
+  */
+ /* INTERNAL: */
+ static void entryCloseInt(UResourceDataEntry *resB) {
+@@ -1059,7 +1109,6 @@ static void entryCloseInt(UResourceDataEntry *resB) {
+  */
+ 
+ static void entryClose(UResourceDataEntry *resB) {
+-  Mutex lock(&resbMutex);
+   entryCloseInt(resB);
+ }
+ 
+diff --git a/source/common/uresimp.h b/source/common/uresimp.h
+index 2685b2d2d..a5288c96a 100644
+--- a/source/common/uresimp.h
++++ b/source/common/uresimp.h
+@@ -37,6 +37,16 @@
+ struct UResourceDataEntry;
+ typedef struct UResourceDataEntry UResourceDataEntry;
+ 
++#define RES_BUFSIZE 64
++#define RES_PATH_SEPARATOR   '/'
++#define RES_PATH_SEPARATOR_S   "/"
++
++U_CAPI void U_EXPORT2 ures_initStackObject(UResourceBundle* resB);
++
++#ifdef __cplusplus
++
++#include "umutex.h"
++
+ /*
+  * Note: If we wanted to make this structure smaller, then we could try
+  * to use one UResourceDataEntry pointer for fAlias and fPool, with a separate
+@@ -51,19 +61,11 @@ struct UResourceDataEntry {
+     UResourceDataEntry *fPool;
+     ResourceData fData; /* data for low level access */
+     char fNameBuffer[3]; /* A small buffer of free space for fName. The free space is due to struct padding. */
+-    uint32_t fCountExisting; /* how much is this resource used */
++    icu::u_atomic_int32_t fCountExisting; /* how much is this resource used */
+     UErrorCode fBogus;
+     /* int32_t fHashKey;*/ /* for faster access in the hashtable */
+ };
+ 
+-#define RES_BUFSIZE 64
+-#define RES_PATH_SEPARATOR   '/'
+-#define RES_PATH_SEPARATOR_S   "/"
+-
+-U_CAPI void U_EXPORT2 ures_initStackObject(UResourceBundle* resB);
+-
+-#ifdef __cplusplus
+-
+ struct UResourceBundle {
+     const char *fKey; /*tag*/
+     /**
