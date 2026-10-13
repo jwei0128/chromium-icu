@@ -201,13 +201,19 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
     if (macros.symbols.isDecimalFormatSymbols()) {
         fMicros.simple.symbols = macros.symbols.getDecimalFormatSymbols();
     } else {
+        // Pass `loadCurrencyData=false` to avoid loading currency bundles for
+        // non-currency formatting (and to avoid loading the locale's default
+        // currency before `setCurrency()` overwrites it below).
         LocalPointer<DecimalFormatSymbols> newSymbols(
-            new DecimalFormatSymbols(macros.locale, *ns, status), status);
+            new DecimalFormatSymbols(
+                macros.locale, *ns, /*loadCurrencyData=*/false, status),
+            status);
         if (U_FAILURE(status)) {
             return nullptr;
         }
         if (isCurrency) {
             newSymbols->setCurrency(currency.getISOCurrency(), status);
+            newSymbols->loadCurrencySpacing(status);
             if (U_FAILURE(status)) {
                 return nullptr;
             }
