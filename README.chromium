@@ -2,7 +2,7 @@ Name: icu
 URL: https://github.com/unicode-org/icu
 Version: 78-2
 CPEPrefix: cpe:/a:icu-project:international_components_for_unicode:78.2
-License: MIT
+License: BSD-2-Clause, BSD-3-Clause, HPND-sell-variant, ICU, MIT, MIT-0, NAIST-2003, Unicode-3.0
 License File: LICENSE
 Security Critical: yes
 Update Mechanism: Manual (https://crbug.com/494114589)
@@ -270,3 +270,11 @@ D. Local Modifications
 13. Missing long name in iso8601 calendar.
     https://unicode-org.atlassian.net/browse/ICU-23262
   - patches/missing_iso8601_resource.patch
+
+14. Reuse cached NumberingSystem in NumberFormat::makeInstance and
+    NumberFormatterImpl::macrosToMicroGenerator.
+  - patches/reuse_numbering_system.patch
+
+15. Skip currency bundle loading in DecimalFormatSymbols for non-currency
+    NumberFormat styles.
+  - patches/skip_currency_for_non_currency.patch

@@ -1405,8 +1405,18 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
         return nullptr;
     }
     else {
-        // Loads the decimal symbols of the desired locale.
-        symbolsToAdopt.adoptInsteadAndCheckErrorCode(new DecimalFormatSymbols(desiredLocale, status), status);
+        // Loads the decimal symbols of the desired locale. Pass `*ns` to avoid
+        // a redundant uncached `NumberingSystem::createInstance()` lookup, and
+        // only load currency bundles for currency styles.
+        bool isCurrency = (style == UNUM_CURRENCY ||
+                           style == UNUM_CURRENCY_ISO ||
+                           style == UNUM_CURRENCY_PLURAL ||
+                           style == UNUM_CURRENCY_ACCOUNTING ||
+                           style == UNUM_CASH_CURRENCY ||
+                           style == UNUM_CURRENCY_STANDARD);
+        symbolsToAdopt.adoptInsteadAndCheckErrorCode(
+            new DecimalFormatSymbols(desiredLocale, *ns, isCurrency, status),
+            status);
         if (U_FAILURE(status)) {
             return nullptr;
         }

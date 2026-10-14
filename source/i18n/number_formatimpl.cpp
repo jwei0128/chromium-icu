@@ -168,16 +168,29 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
 
     // Select the numbering system.
     LocalPointer<const NumberingSystem> nsLocal;
-    const NumberingSystem* ns;
+    const NumberingSystem* ns = nullptr;
+    const char* nsName = nullptr;
     if (macros.symbols.isNumberingSystem()) {
         ns = macros.symbols.getNumberingSystem();
+    } else if (macros.symbols.isDecimalFormatSymbols() &&
+               macros.symbols.getDecimalFormatSymbols()->getLocale() ==
+                   macros.locale &&
+               macros.symbols.getDecimalFormatSymbols()
+                       ->getNumberingSystemName()[0] != '\0') {
+        // Reuse the numbering system name already resolved on the
+        // DecimalFormatSymbols when its locale matches `macros.locale`,
+        // avoiding a redundant `NumberingSystem::createInstance()` lookup.
+        nsName =
+            macros.symbols.getDecimalFormatSymbols()->getNumberingSystemName();
     } else {
         // TODO: Is there a way to avoid creating the NumberingSystem object?
         ns = NumberingSystem::createInstance(macros.locale, status);
         // Give ownership to the function scope.
         nsLocal.adoptInstead(ns);
     }
-    const char* nsName = U_SUCCESS(status) ? ns->getName() : "latn";
+    if (nsName == nullptr) {
+        nsName = (U_SUCCESS(status) && ns != nullptr) ? ns->getName() : "latn";
+    }
     uprv_strncpy(fMicros.nsName, nsName, 8);
     fMicros.nsName[8] = 0; // guarantee NUL-terminated
 
@@ -187,9 +200,21 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
     // Resolve the symbols. Do this here because currency may need to customize them.
     if (macros.symbols.isDecimalFormatSymbols()) {
         fMicros.simple.symbols = macros.symbols.getDecimalFormatSymbols();
+        if (isCurrency && !fMicros.simple.symbols->isCurrencyDataLoaded()) {
+            const_cast<DecimalFormatSymbols*>(fMicros.simple.symbols)
+                ->loadCurrencyData(status);
+            if (U_FAILURE(status)) {
+                return nullptr;
+            }
+        }
     } else {
+        // Pass `loadCurrencyData=isCurrency` to avoid loading currency bundles
+        // for non-currency formatting while ensuring currency-specific pattern
+        // and separator overrides are loaded for currency formatting.
         LocalPointer<DecimalFormatSymbols> newSymbols(
-            new DecimalFormatSymbols(macros.locale, *ns, status), status);
+            new DecimalFormatSymbols(
+                macros.locale, *ns, /*loadCurrencyData=*/isCurrency, status),
+            status);
         if (U_FAILURE(status)) {
             return nullptr;
         }
