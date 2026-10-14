@@ -270,3 +270,9 @@ D. Local Modifications
 13. Missing long name in iso8601 calendar.
     https://unicode-org.atlassian.net/browse/ICU-23262
   - patches/missing_iso8601_resource.patch
+
+14. Fix signed int32_t overflow in CharString.
+  - patches/charstr.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23537
+  - https://github.com/unicode-org/icu/pull/4243
+  - https://crbug.com/565133743
