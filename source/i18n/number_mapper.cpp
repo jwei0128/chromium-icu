@@ -77,6 +77,11 @@ MacroProps NumberPropertyMapper::oldToNew(const DecimalFormatProperties& propert
     CurrencyUnit currency;
     UCurrencyUsage currencyUsage;
     if (useCurrency) {
+        if (macros.symbols.isDecimalFormatSymbols()) {
+            const_cast<DecimalFormatSymbols*>(
+                macros.symbols.getDecimalFormatSymbols())
+                ->loadCurrencyData(status);
+        }
         currency = resolveCurrency(properties, locale, status);
         currencyUsage = properties.currencyUsage.getOrDefault(UCURR_USAGE_STANDARD);
         // NOTE: Slicing is OK.
