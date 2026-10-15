@@ -16,6 +16,23 @@
       "message": "ptal",
       "revId": "37961e19f1e4c7549adc06ba4164281ed3a21fb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a32838a_dbf4ff3b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128431
+      },
+      "writtenOn": "2026-10-15T07:58:08Z",
+      "side": 1,
+      "message": "lgtm\n\ncan you cc me and tkent@ to the bug?",
+      "revId": "37961e19f1e4c7549adc06ba4164281ed3a21fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
