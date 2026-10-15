@@ -168,16 +168,30 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
 
     // Select the numbering system.
     LocalPointer<const NumberingSystem> nsLocal;
-    const NumberingSystem* ns;
+    const NumberingSystem* ns = nullptr;
+    const char* nsName = nullptr;
     if (macros.symbols.isNumberingSystem()) {
         ns = macros.symbols.getNumberingSystem();
+    } else if (macros.symbols.isDecimalFormatSymbols() &&
+               macros.symbols.getDecimalFormatSymbols()
+                   ->isLocaleDefaultNumberingSystem() &&
+               macros.symbols.getDecimalFormatSymbols()->getLocale() ==
+                   macros.locale) {
+        // Reuse the numbering system name already resolved on the
+        // DecimalFormatSymbols when it holds `macros.locale`'s default
+        // decimal numbering system, avoiding a redundant
+        // `NumberingSystem::createInstance()` lookup.
+        nsName =
+            macros.symbols.getDecimalFormatSymbols()->getNumberingSystemName();
     } else {
         // TODO: Is there a way to avoid creating the NumberingSystem object?
         ns = NumberingSystem::createInstance(macros.locale, status);
         // Give ownership to the function scope.
         nsLocal.adoptInstead(ns);
     }
-    const char* nsName = U_SUCCESS(status) ? ns->getName() : "latn";
+    if (nsName == nullptr) {
+        nsName = (U_SUCCESS(status) && ns != nullptr) ? ns->getName() : "latn";
+    }
     uprv_strncpy(fMicros.nsName, nsName, 8);
     fMicros.nsName[8] = 0; // guarantee NUL-terminated
 

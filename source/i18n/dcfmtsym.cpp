@@ -113,7 +113,22 @@ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, UErrorCode& status
 
 DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, const NumberingSystem& ns, UErrorCode& status)
         : UObject(), locale(loc) {
-    initialize(locale, status, false, &ns);
+    initialize(locale, status, false, &ns, /*isLocaleDefaultNs=*/false);
+}
+
+DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc,
+                                           const NumberingSystem& ns,
+                                           UBool isLocaleDefaultNs,
+                                           UErrorCode& status)
+        : UObject(), locale(loc) {
+    initialize(locale, status, false, &ns, isLocaleDefaultNs);
+}
+
+DecimalFormatSymbols*
+DecimalFormatSymbols::createForLocale(const Locale& loc,
+                                      const NumberingSystem& ns,
+                                      UErrorCode& status) {
+    return new DecimalFormatSymbols(loc, ns, /*isLocaleDefaultNs=*/true, status);
 }
 
 DecimalFormatSymbols::DecimalFormatSymbols()
@@ -169,6 +184,7 @@ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
         validLocale = rhs.validLocale;
         fIsCustomCurrencySymbol = rhs.fIsCustomCurrencySymbol; 
         fIsCustomIntlCurrencySymbol = rhs.fIsCustomIntlCurrencySymbol; 
+        fIsLocaleDefaultNumberingSystem = rhs.fIsLocaleDefaultNumberingSystem;
         fCodePointZero = rhs.fCodePointZero;
         currPattern = rhs.currPattern;
         uprv_strcpy(nsName, rhs.nsName);
@@ -352,7 +368,7 @@ CurrencySpacingSink::~CurrencySpacingSink() {}
 
 void
 DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
-    UBool useLastResortData, const NumberingSystem* ns)
+    UBool useLastResortData, const NumberingSystem* ns, UBool isLocaleDefaultNs)
 {
     if (U_FAILURE(status)) { return; }
 
@@ -373,6 +389,7 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
     const char *nsName;
     if (U_SUCCESS(status) && ns->getRadix() == 10 && !ns->isAlgorithmic()) {
         nsName = ns->getName();
+        fIsLocaleDefaultNumberingSystem = isLocaleDefaultNs;
         UnicodeString digitString(ns->getDescription());
         int32_t digitIndex = 0;
         UChar32 digit = digitString.char32At(0);
@@ -384,6 +401,7 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
         }
     } else {
         nsName = gLatn;
+        fIsLocaleDefaultNumberingSystem = false;
     }
     uprv_strcpy(this->nsName, nsName);
 
@@ -513,6 +531,7 @@ DecimalFormatSymbols::initialize() {
     fSymbols[kApproximatelySignSymbol] = u'~';          // '~' approximately sign
     fIsCustomCurrencySymbol = false; 
     fIsCustomIntlCurrencySymbol = false;
+    fIsLocaleDefaultNumberingSystem = false;
     fCodePointZero = 0x30;
     U_ASSERT(fCodePointZero == fSymbols[kZeroDigitSymbol].char32At(0));
     currPattern = nullptr;
