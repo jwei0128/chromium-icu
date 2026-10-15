@@ -1,0 +1,246 @@
+diff --git a/source/i18n/dcfmtsym.cpp b/source/i18n/dcfmtsym.cpp
+index b82a95873..db8c70b89 100644
+--- a/source/i18n/dcfmtsym.cpp
++++ b/source/i18n/dcfmtsym.cpp
+@@ -113,7 +113,22 @@ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, UErrorCode& status
+ 
+ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, const NumberingSystem& ns, UErrorCode& status)
+         : UObject(), locale(loc) {
+-    initialize(locale, status, false, &ns);
++    initialize(locale, status, false, &ns, /*isLocaleDefaultNs=*/false);
++}
++
++DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc,
++                                           const NumberingSystem& ns,
++                                           UBool isLocaleDefaultNs,
++                                           UErrorCode& status)
++        : UObject(), locale(loc) {
++    initialize(locale, status, false, &ns, isLocaleDefaultNs);
++}
++
++DecimalFormatSymbols*
++DecimalFormatSymbols::createForLocale(const Locale& loc,
++                                      const NumberingSystem& ns,
++                                      UErrorCode& status) {
++    return new DecimalFormatSymbols(loc, ns, /*isLocaleDefaultNs=*/true, status);
+ }
+ 
+ DecimalFormatSymbols::DecimalFormatSymbols()
+@@ -169,6 +184,7 @@ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
+         validLocale = rhs.validLocale;
+         fIsCustomCurrencySymbol = rhs.fIsCustomCurrencySymbol; 
+         fIsCustomIntlCurrencySymbol = rhs.fIsCustomIntlCurrencySymbol; 
++        fIsLocaleDefaultNumberingSystem = rhs.fIsLocaleDefaultNumberingSystem;
+         fCodePointZero = rhs.fCodePointZero;
+         currPattern = rhs.currPattern;
+         uprv_strcpy(nsName, rhs.nsName);
+@@ -352,7 +368,7 @@ CurrencySpacingSink::~CurrencySpacingSink() {}
+ 
+ void
+ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
+-    UBool useLastResortData, const NumberingSystem* ns)
++    UBool useLastResortData, const NumberingSystem* ns, UBool isLocaleDefaultNs)
+ {
+     if (U_FAILURE(status)) { return; }
+ 
+@@ -373,6 +389,7 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
+     const char *nsName;
+     if (U_SUCCESS(status) && ns->getRadix() == 10 && !ns->isAlgorithmic()) {
+         nsName = ns->getName();
++        fIsLocaleDefaultNumberingSystem = isLocaleDefaultNs;
+         UnicodeString digitString(ns->getDescription());
+         int32_t digitIndex = 0;
+         UChar32 digit = digitString.char32At(0);
+@@ -384,6 +401,7 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
+         }
+     } else {
+         nsName = gLatn;
++        fIsLocaleDefaultNumberingSystem = false;
+     }
+     uprv_strcpy(this->nsName, nsName);
+ 
+@@ -513,6 +531,7 @@ DecimalFormatSymbols::initialize() {
+     fSymbols[kApproximatelySignSymbol] = u'~';          // '~' approximately sign
+     fIsCustomCurrencySymbol = false; 
+     fIsCustomIntlCurrencySymbol = false;
++    fIsLocaleDefaultNumberingSystem = false;
+     fCodePointZero = 0x30;
+     U_ASSERT(fCodePointZero == fSymbols[kZeroDigitSymbol].char32At(0));
+     currPattern = nullptr;
+diff --git a/source/i18n/number_formatimpl.cpp b/source/i18n/number_formatimpl.cpp
+index 45baa9461..99f14e39b 100644
+--- a/source/i18n/number_formatimpl.cpp
++++ b/source/i18n/number_formatimpl.cpp
+@@ -168,16 +168,30 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
+ 
+     // Select the numbering system.
+     LocalPointer<const NumberingSystem> nsLocal;
+-    const NumberingSystem* ns;
++    const NumberingSystem* ns = nullptr;
++    const char* nsName = nullptr;
+     if (macros.symbols.isNumberingSystem()) {
+         ns = macros.symbols.getNumberingSystem();
++    } else if (macros.symbols.isDecimalFormatSymbols() &&
++               macros.symbols.getDecimalFormatSymbols()
++                   ->isLocaleDefaultNumberingSystem() &&
++               macros.symbols.getDecimalFormatSymbols()->getLocale() ==
++                   macros.locale) {
++        // Reuse the numbering system name already resolved on the
++        // DecimalFormatSymbols when it holds `macros.locale`'s default
++        // decimal numbering system, avoiding a redundant
++        // `NumberingSystem::createInstance()` lookup.
++        nsName =
++            macros.symbols.getDecimalFormatSymbols()->getNumberingSystemName();
+     } else {
+         // TODO: Is there a way to avoid creating the NumberingSystem object?
+         ns = NumberingSystem::createInstance(macros.locale, status);
+         // Give ownership to the function scope.
+         nsLocal.adoptInstead(ns);
+     }
+-    const char* nsName = U_SUCCESS(status) ? ns->getName() : "latn";
++    if (nsName == nullptr) {
++        nsName = (U_SUCCESS(status) && ns != nullptr) ? ns->getName() : "latn";
++    }
+     uprv_strncpy(fMicros.nsName, nsName, 8);
+     fMicros.nsName[8] = 0; // guarantee NUL-terminated
+ 
+diff --git a/source/i18n/numfmt.cpp b/source/i18n/numfmt.cpp
+index 7c877a33a..40049c9ee 100644
+--- a/source/i18n/numfmt.cpp
++++ b/source/i18n/numfmt.cpp
+@@ -1244,8 +1244,8 @@ static void U_CALLCONV nscacheInit() {
+     U_ASSERT(NumberingSystem_cache == nullptr);
+     ucln_i18n_registerCleanup(UCLN_I18N_NUMFMT, numfmt_cleanup);
+     UErrorCode status = U_ZERO_ERROR;
+-    NumberingSystem_cache = uhash_open(uhash_hashLong,
+-                                       uhash_compareLong,
++    NumberingSystem_cache = uhash_open(uhash_hashChars,
++                                       uhash_compareChars,
+                                        nullptr,
+                                        &status);
+     if (U_FAILURE(status)) {
+@@ -1253,6 +1253,7 @@ static void U_CALLCONV nscacheInit() {
+         NumberingSystem_cache = nullptr;
+         return;
+     }
++    uhash_setKeyDeleter(NumberingSystem_cache, uprv_free);
+     uhash_setValueDeleter(NumberingSystem_cache, deleteNumberingSystem);
+ }
+ 
+@@ -1373,15 +1374,26 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
+     LocalPointer<NumberingSystem> ownedNs;
+     NumberingSystem *ns = nullptr;
+     if (NumberingSystem_cache != nullptr) {
+-        // TODO: Bad hash key usage, see ticket #8504.
+-        int32_t hashKey = desiredLocale.hashCode();
++        const char* localeName = desiredLocale.getName();
+ 
+         static UMutex nscacheMutex;
+         Mutex lock(&nscacheMutex);
+-        ns = static_cast<NumberingSystem*>(uhash_iget(NumberingSystem_cache, hashKey));
++        ns = static_cast<NumberingSystem*>(uhash_get(NumberingSystem_cache, localeName));
+         if (ns == nullptr) {
+-            ns = NumberingSystem::createInstance(desiredLocale,status);
+-            uhash_iput(NumberingSystem_cache, hashKey, (void*)ns, &status);
++            ns = NumberingSystem::createInstance(desiredLocale, status);
++            if (U_SUCCESS(status) && ns != nullptr) {
++                char* key = uprv_strdup(localeName);
++                if (key == nullptr) {
++                    status = U_MEMORY_ALLOCATION_ERROR;
++                    delete ns;
++                    ns = nullptr;
++                } else {
++                    uhash_put(NumberingSystem_cache, key, static_cast<void*>(ns), &status);
++                }
++            } else {
++                delete ns;
++                ns = nullptr;
++            }
+         }
+     } else {
+         ownedNs.adoptInstead(NumberingSystem::createInstance(desiredLocale,status));
+@@ -1405,8 +1417,11 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
+         return nullptr;
+     }
+     else {
+-        // Loads the decimal symbols of the desired locale.
+-        symbolsToAdopt.adoptInsteadAndCheckErrorCode(new DecimalFormatSymbols(desiredLocale, status), status);
++        // Loads the decimal symbols of the desired locale. Pass `*ns` to avoid
++        // a redundant uncached `NumberingSystem::createInstance()` lookup.
++        symbolsToAdopt.adoptInsteadAndCheckErrorCode(
++            DecimalFormatSymbols::createForLocale(desiredLocale, *ns, status),
++            status);
+         if (U_FAILURE(status)) {
+             return nullptr;
+         }
+diff --git a/source/i18n/unicode/dcfmtsym.h b/source/i18n/unicode/dcfmtsym.h
+index 24bc76932..49a6b99ed 100644
+--- a/source/i18n/unicode/dcfmtsym.h
++++ b/source/i18n/unicode/dcfmtsym.h
+@@ -207,6 +207,19 @@ public:
+      */
+     U_I18N_API DecimalFormatSymbols(const Locale& locale, const NumberingSystem& ns, UErrorCode& status);
+ 
++#ifndef U_HIDE_INTERNAL_API
++    /**
++     * Creates a DecimalFormatSymbols instance for the given locale using that
++     * locale's already-resolved default NumberingSystem.
++     *
++     * @internal
++     */
++    U_I18N_API static DecimalFormatSymbols* createForLocale(
++        const Locale& locale,
++        const NumberingSystem& ns,
++        UErrorCode& status);
++#endif  // U_HIDE_INTERNAL_API
++
+     /**
+      * Create a DecimalFormatSymbols object for the default locale.
+      * This constructor will not fail.  If the resource file data is
+@@ -387,13 +400,20 @@ private:
+      *                             back to the locale.
+      */
+     void initialize(const Locale& locale, UErrorCode& success,
+-                    UBool useLastResortData = false, const NumberingSystem* ns = nullptr);
++                    UBool useLastResortData = false,
++                    const NumberingSystem* ns = nullptr,
++                    UBool isLocaleDefaultNs = true);
+ 
+     /**
+      * Initialize the symbols with default values.
+      */
+     void initialize();
+ 
++    DecimalFormatSymbols(const Locale& locale,
++                         const NumberingSystem& ns,
++                         UBool isLocaleDefaultNs,
++                         UErrorCode& status);
++
+ public:
+ 
+ #ifndef U_HIDE_INTERNAL_API
+@@ -465,6 +485,16 @@ public:
+      * @internal
+      */
+     U_I18N_API inline const char* getNumberingSystemName() const;
++
++    /**
++     * Returns true if this instance was initialized with `locale`'s default
++     * numbering system and that numbering system is a radix-10 non-algorithmic
++     * numbering system.
++     * @internal
++     */
++    U_I18N_API inline UBool isLocaleDefaultNumberingSystem() const {
++        return fIsLocaleDefaultNumberingSystem;
++    }
+ #endif  /* U_HIDE_INTERNAL_API */
+ 
+ private:
+@@ -515,6 +545,7 @@ private:
+     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
+     UBool fIsCustomCurrencySymbol;
+     UBool fIsCustomIntlCurrencySymbol;
++    UBool fIsLocaleDefaultNumberingSystem = false;
+     char nsName[kInternalNumSysNameCapacity+1] = {};
+ };
+ 
