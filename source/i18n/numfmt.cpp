@@ -1244,8 +1244,8 @@ static void U_CALLCONV nscacheInit() {
     U_ASSERT(NumberingSystem_cache == nullptr);
     ucln_i18n_registerCleanup(UCLN_I18N_NUMFMT, numfmt_cleanup);
     UErrorCode status = U_ZERO_ERROR;
-    NumberingSystem_cache = uhash_open(uhash_hashLong,
-                                       uhash_compareLong,
+    NumberingSystem_cache = uhash_open(uhash_hashChars,
+                                       uhash_compareChars,
                                        nullptr,
                                        &status);
     if (U_FAILURE(status)) {
@@ -1253,6 +1253,7 @@ static void U_CALLCONV nscacheInit() {
         NumberingSystem_cache = nullptr;
         return;
     }
+    uhash_setKeyDeleter(NumberingSystem_cache, uprv_free);
     uhash_setValueDeleter(NumberingSystem_cache, deleteNumberingSystem);
 }
 
@@ -1373,15 +1374,26 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
     LocalPointer<NumberingSystem> ownedNs;
     NumberingSystem *ns = nullptr;
     if (NumberingSystem_cache != nullptr) {
-        // TODO: Bad hash key usage, see ticket #8504.
-        int32_t hashKey = desiredLocale.hashCode();
+        const char* localeName = desiredLocale.getName();
 
         static UMutex nscacheMutex;
         Mutex lock(&nscacheMutex);
-        ns = static_cast<NumberingSystem*>(uhash_iget(NumberingSystem_cache, hashKey));
+        ns = static_cast<NumberingSystem*>(uhash_get(NumberingSystem_cache, localeName));
         if (ns == nullptr) {
-            ns = NumberingSystem::createInstance(desiredLocale,status);
-            uhash_iput(NumberingSystem_cache, hashKey, (void*)ns, &status);
+            ns = NumberingSystem::createInstance(desiredLocale, status);
+            if (U_SUCCESS(status) && ns != nullptr) {
+                char* key = uprv_strdup(localeName);
+                if (key == nullptr) {
+                    status = U_MEMORY_ALLOCATION_ERROR;
+                    delete ns;
+                    ns = nullptr;
+                } else {
+                    uhash_put(NumberingSystem_cache, key, static_cast<void*>(ns), &status);
+                }
+            } else {
+                delete ns;
+                ns = nullptr;
+            }
         }
     } else {
         ownedNs.adoptInstead(NumberingSystem::createInstance(desiredLocale,status));
@@ -1405,8 +1417,11 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
         return nullptr;
     }
     else {
-        // Loads the decimal symbols of the desired locale.
-        symbolsToAdopt.adoptInsteadAndCheckErrorCode(new DecimalFormatSymbols(desiredLocale, status), status);
+        // Loads the decimal symbols of the desired locale. Pass `*ns` to avoid
+        // a redundant uncached `NumberingSystem::createInstance()` lookup.
+        symbolsToAdopt.adoptInsteadAndCheckErrorCode(
+            DecimalFormatSymbols::createForLocale(desiredLocale, *ns, status),
+            status);
         if (U_FAILURE(status)) {
             return nullptr;
         }
