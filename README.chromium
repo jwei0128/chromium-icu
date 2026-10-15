@@ -2,7 +2,7 @@ Name: icu
 URL: https://github.com/unicode-org/icu
 Version: 78-2
 CPEPrefix: cpe:/a:icu-project:international_components_for_unicode:78.2
-License: MIT
+License: MIT, BSD-2-Clause, BSD-3-Clause, HPND-sell-variant, ICU, MIT-0, NAIST-2003, Unicode-3.0
 License File: LICENSE
 Security Critical: yes
 Update Mechanism: Manual (https://crbug.com/494114589)
