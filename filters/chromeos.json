@@ -190,9 +190,28 @@
     },
     "brkitr_tree": {
       "excludelist": [
-        "en_US_POSIX"
+        "de",
+        "en",
+        "en_US",
+        "en_US_POSIX",
+        "es",
+        "fr",
+        "it",
+        "pt",
+        "ru"
       ]
     },
+    "misc": {
+      "excludelist": [
+        "currencyNumericCodes",
+        "genderList",
+        "grammaticalFeatures",
+        "icustd",
+        "icuver",
+        "windowsZones"
+      ]
+    },
+    "zone_supplemental": { "filterType": "exclude" },
 // Based on the ICU63 version of
 // https://cs.chromium.org/chromium/src/third_party/icu/source/data/mappings/ucmlocal.mk?rcl=797b7c
     "conversion_mappings": {
@@ -615,9 +634,6 @@
       "includelist": [
 // Need to explicitly add "root"
         "root",
-
-// Need to explicitly add "tzdbNames"
-        "tzdbNames",
 // List of all Chrome UI Languages
         "af",
         "am",
@@ -1445,12 +1461,12 @@
       ],
       "files": {
         "includelist": [
-          "grammaticalFeatures"
+          "metadata"
         ]
       },
       "rules": [
-        "-/*",
-        "+/grammaticalData/derivations/*/compound/gender/per"
+        "-/alias/usage",
+        "-/defaultContent"
       ]
     },
     {
@@ -1468,12 +1484,28 @@
         "+/calendarPreferenceData",
         "+/cldrVersion",
         "+/codeMappings",
-        "+/idValidity",
+        "+/idValidity/region",
         "+/measurementData",
         "+/territoryContainment",
         "+/timeData",
         "+/weekData",
         "+/weekData%variant"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "includelist": [
+          "units"
+        ]
+      },
+      "rules": [
+        "-/unitConstants",
+        "-/unitIdComponents",
+        "-/unitPreferenceData",
+        "-/unitPrefixes"
       ]
     },
     {
