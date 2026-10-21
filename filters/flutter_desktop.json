@@ -28,7 +28,7 @@
     "curr_tree": { "filterType": "exclude" },
     "lang_tree": { "filterType": "exclude" },
     "locales_tree": { "filterType": "exclude" },
-    "misc": { "includelist": [ "icustd", "icuver", "likelySubtags" ] },
+    "misc": { "includelist": [ "likelySubtags" ] },
     "normalization": { "includelist": [ "nfkc" ] },
     "rbnf_tree": { "filterType": "exclude" },
     "rbnf_index": { "filterType": "exclude" },
@@ -37,6 +37,7 @@
     "translit": { "filterType": "exclude" },
     "unames": { "filterType": "exclude" },
     "unit_tree": { "filterType": "exclude" },
+    "zone_supplemental": { "filterType": "exclude" },
     "zone_tree": { "filterType": "exclude" }
   },
   "resourceFilters": [
