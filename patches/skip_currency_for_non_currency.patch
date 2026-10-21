@@ -1,0 +1,487 @@
+diff --git a/source/i18n/dcfmtsym.cpp b/source/i18n/dcfmtsym.cpp
+index db8c70b89..09caf29ab 100644
+--- a/source/i18n/dcfmtsym.cpp
++++ b/source/i18n/dcfmtsym.cpp
+@@ -39,6 +39,8 @@
+ #include "ureslocs.h"
+ #include "charstr.h"
+ #include "uassert.h"
++#include "umutex.h"
++#include "mutex.h"
+ 
+ // *****************************************************************************
+ // class DecimalFormatSymbols
+@@ -56,6 +58,10 @@ static const char gCurrencyMatchTag[] = "currencyMatch";
+ static const char gCurrencySudMatchTag[] = "surroundingMatch";
+ static const char gCurrencyInsertBtnTag[] = "insertBetween";
+ static const char gLatn[] =  "latn";
++
++// Guards lazy loading of currency data, and copies of instances whose currency
++// data is not loaded yet.
++static UMutex gCurrencyDataMutex;
+ static const char gSymbols[] = "symbols";
+ static const char gNumberElementsLatnSymbols[] = "NumberElements/latn/symbols";
+ 
+@@ -119,16 +125,19 @@ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc, const NumberingSys
+ DecimalFormatSymbols::DecimalFormatSymbols(const Locale& loc,
+                                            const NumberingSystem& ns,
+                                            UBool isLocaleDefaultNs,
++                                           UBool loadCurrencyData,
+                                            UErrorCode& status)
+         : UObject(), locale(loc) {
+-    initialize(locale, status, false, &ns, isLocaleDefaultNs);
++    initialize(locale, status, false, &ns, isLocaleDefaultNs, loadCurrencyData);
+ }
+ 
+ DecimalFormatSymbols*
+ DecimalFormatSymbols::createForLocale(const Locale& loc,
+                                       const NumberingSystem& ns,
+-                                      UErrorCode& status) {
+-    return new DecimalFormatSymbols(loc, ns, /*isLocaleDefaultNs=*/true, status);
++                                      UErrorCode& status,
++                                      UBool loadCurrencyData) {
++    return new DecimalFormatSymbols(
++        loc, ns, /*isLocaleDefaultNs=*/true, loadCurrencyData, status);
+ }
+ 
+ DecimalFormatSymbols::DecimalFormatSymbols()
+@@ -171,6 +180,14 @@ DecimalFormatSymbols&
+ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
+ {
+     if (this != &rhs) {
++        // `rhs` may lazily load its currency data concurrently in a const
++        // method. Read its flag before its fields, and hold
++        // `gCurrencyDataMutex` while copying if it is not loaded yet.
++        const bool rhsCurrencyDataLoaded =
++            rhs.fIsCurrencyDataLoaded.load(std::memory_order_acquire);
++        if (!rhsCurrencyDataLoaded) {
++            umtx_lock(&gCurrencyDataMutex);
++        }
+         for (int32_t i = 0; i < static_cast<int32_t>(kFormatSymbolCount); ++i) {
+             // fastCopyFrom is safe, see docs on fSymbols
+             fSymbols[static_cast<ENumberFormatSymbol>(i)].fastCopyFrom(rhs.fSymbols[static_cast<ENumberFormatSymbol>(i)]);
+@@ -185,9 +202,15 @@ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
+         fIsCustomCurrencySymbol = rhs.fIsCustomCurrencySymbol; 
+         fIsCustomIntlCurrencySymbol = rhs.fIsCustomIntlCurrencySymbol; 
+         fIsLocaleDefaultNumberingSystem = rhs.fIsLocaleDefaultNumberingSystem;
++        fIsCurrencyDataLoaded.store(
++            rhs.fIsCurrencyDataLoaded.load(std::memory_order_relaxed),
++            std::memory_order_release);
+         fCodePointZero = rhs.fCodePointZero;
+         currPattern = rhs.currPattern;
+         uprv_strcpy(nsName, rhs.nsName);
++        if (!rhsCurrencyDataLoaded) {
++            umtx_unlock(&gCurrencyDataMutex);
++        }
+     }
+     return *this;
+ }
+@@ -206,6 +229,15 @@ DecimalFormatSymbols::operator==(const DecimalFormatSymbols& that) const
+     if (fIsCustomIntlCurrencySymbol != that.fIsCustomIntlCurrencySymbol) { 
+         return false;
+     } 
++    if (locale != that.locale ||
++        actualLocale != that.actualLocale ||
++        validLocale != that.validLocale) {
++        return false;
++    }
++    // Load currency data unconditionally: comparing fields that are not loaded
++    // yet would race with a concurrent lazy load on either object.
++    ensureCurrencyDataLoaded();
++    that.ensureCurrencyDataLoaded();
+     for (int32_t i = 0; i < static_cast<int32_t>(kFormatSymbolCount); ++i) {
+         if (fSymbols[static_cast<ENumberFormatSymbol>(i)] != that.fSymbols[static_cast<ENumberFormatSymbol>(i)]) {
+             return false;
+@@ -220,9 +252,7 @@ DecimalFormatSymbols::operator==(const DecimalFormatSymbols& that) const
+         }
+     }
+     // No need to check fCodePointZero since it is based on fSymbols
+-    return locale == that.locale &&
+-           actualLocale == that.actualLocale &&
+-           validLocale == that.validLocale;
++    return true;
+ }
+ 
+ // -------------------------------------
+@@ -297,12 +327,17 @@ struct DecFmtSymDataSink : public ResourceSink {
+ };
+ 
+ struct CurrencySpacingSink : public ResourceSink {
+-    DecimalFormatSymbols& dfs;
++    UnicodeString* beforeCurrencySym;
++    UnicodeString* afterCurrencySym;
+     UBool hasBeforeCurrency;
+     UBool hasAfterCurrency;
+ 
+-    CurrencySpacingSink(DecimalFormatSymbols& _dfs)
+-        : dfs(_dfs), hasBeforeCurrency(false), hasAfterCurrency(false) {}
++    CurrencySpacingSink(UnicodeString* _beforeCurrencySym,
++                        UnicodeString* _afterCurrencySym)
++        : beforeCurrencySym(_beforeCurrencySym),
++          afterCurrencySym(_afterCurrencySym),
++          hasBeforeCurrency(false),
++          hasAfterCurrency(false) {}
+     virtual ~CurrencySpacingSink();
+ 
+     virtual void put(const char *key, ResourceValue &value, UBool /*noFallback*/,
+@@ -333,11 +368,11 @@ struct CurrencySpacingSink : public ResourceSink {
+                     continue;
+                 }
+ 
+-                const UnicodeString& current = dfs.getPatternForCurrencySpacing(
+-                    pattern, beforeCurrency, errorCode);
++                UnicodeString& current = beforeCurrency
++                    ? beforeCurrencySym[static_cast<int32_t>(pattern)]
++                    : afterCurrencySym[static_cast<int32_t>(pattern)];
+                 if (current.isEmpty()) {
+-                    dfs.setPatternForCurrencySpacing(
+-                        pattern, beforeCurrency, value.getUnicodeString(errorCode));
++                    current = value.getUnicodeString(errorCode);
+                 }
+             }
+         }
+@@ -349,12 +384,12 @@ struct CurrencySpacingSink : public ResourceSink {
+         static const char* defaults[] = { "[:letter:]", "[:digit:]", " " };
+         if (!hasBeforeCurrency || !hasAfterCurrency) {
+             for (int32_t pattern = 0; pattern < UNUM_CURRENCY_SPACING_COUNT; pattern++) {
+-                dfs.setPatternForCurrencySpacing(static_cast<UCurrencySpacing>(pattern),
+-                    false, UnicodeString(defaults[pattern], -1, US_INV));
++                afterCurrencySym[pattern] =
++                    UnicodeString(defaults[pattern], -1, US_INV);
+             }
+             for (int32_t pattern = 0; pattern < UNUM_CURRENCY_SPACING_COUNT; pattern++) {
+-                dfs.setPatternForCurrencySpacing(static_cast<UCurrencySpacing>(pattern),
+-                    true, UnicodeString(defaults[pattern], -1, US_INV));
++                beforeCurrencySym[pattern] =
++                    UnicodeString(defaults[pattern], -1, US_INV);
+             }
+         }
+     }
+@@ -368,7 +403,8 @@ CurrencySpacingSink::~CurrencySpacingSink() {}
+ 
+ void
+ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
+-    UBool useLastResortData, const NumberingSystem* ns, UBool isLocaleDefaultNs)
++    UBool useLastResortData, const NumberingSystem* ns, UBool isLocaleDefaultNs,
++    UBool loadCurrency)
+ {
+     if (U_FAILURE(status)) { return; }
+ 
+@@ -474,23 +510,53 @@ DecimalFormatSymbols::initialize(const Locale& loc, UErrorCode& status,
+     }
+     fCodePointZero = tempCodePointZero;
+ 
++    if (loadCurrency) {
++        loadCurrencyDataLocked(status);
++    } else {
++        fIsCurrencyDataLoaded.store(false, std::memory_order_relaxed);
++    }
++}
++
++void DecimalFormatSymbols::loadCurrencyData(UErrorCode& status) {
++    if (U_FAILURE(status) ||
++        fIsCurrencyDataLoaded.load(std::memory_order_acquire)) {
++        return;
++    }
++    Mutex lock(&gCurrencyDataMutex);
++    if (fIsCurrencyDataLoaded.load(std::memory_order_relaxed)) {
++        return;
++    }
++    loadCurrencyDataLocked(status);
++    if (U_SUCCESS(status)) {
++        fIsCurrencyDataLoaded.store(true, std::memory_order_release);
++    }
++}
++
++void DecimalFormatSymbols::loadCurrencyDataLocked(UErrorCode& status) {
++    if (U_FAILURE(status)) {
++        return;
++    }
++    const char* locStr = locale.getName();
++
+     // Get the default currency from the currency API.
+     UErrorCode internalStatus = U_ZERO_ERROR; // don't propagate failures out
+     char16_t curriso[4];
+-    UnicodeString tempStr;
+-    int32_t currisoLength = ucurr_forLocale(locStr, curriso, UPRV_LENGTHOF(curriso), &internalStatus);
++    int32_t currisoLength =
++        ucurr_forLocale(locStr, curriso, UPRV_LENGTHOF(curriso), &internalStatus);
+     if (U_SUCCESS(internalStatus) && currisoLength == 3) {
+-        setCurrency(curriso, status);
++        setCurrencyInternal(curriso, status);
+     } else {
+-        setCurrency(nullptr, status);
++        setCurrencyInternal(nullptr, status);
+     }
+ 
+     // Currency Spacing.
+-    LocalUResourceBundlePointer currencyResource(ures_open(U_ICUDATA_CURR, locStr, &status));
+-    CurrencySpacingSink currencySink(*this);
+-    ures_getAllItemsWithFallback(currencyResource.getAlias(), gCurrencySpacingTag, currencySink, status);
++    LocalUResourceBundlePointer currencyResource(
++        ures_open(U_ICUDATA_CURR, locStr, &status));
++    CurrencySpacingSink currencySink(
++        currencySpcBeforeSym, currencySpcAfterSym);
++    ures_getAllItemsWithFallback(
++        currencyResource.getAlias(), gCurrencySpacingTag, currencySink, status);
+     currencySink.resolveMissing();
+-    if (U_FAILURE(status)) { return; }
+ }
+ 
+ void
+@@ -532,6 +598,7 @@ DecimalFormatSymbols::initialize() {
+     fIsCustomCurrencySymbol = false; 
+     fIsCustomIntlCurrencySymbol = false;
+     fIsLocaleDefaultNumberingSystem = false;
++    fIsCurrencyDataLoaded.store(true, std::memory_order_relaxed);
+     fCodePointZero = 0x30;
+     U_ASSERT(fCodePointZero == fSymbols[kZeroDigitSymbol].char32At(0));
+     currPattern = nullptr;
+@@ -542,7 +609,13 @@ void DecimalFormatSymbols::setCurrency(const char16_t* currency, UErrorCode& sta
+     // TODO: If this method is made public:
+     // - Adopt ICU4J behavior of not allowing currency to be null.
+     // - Also verify that the length of currency is 3.
+-    if (!currency) {
++    loadCurrencyData(status);
++    setCurrencyInternal(currency, status);
++}
++
++void DecimalFormatSymbols::setCurrencyInternal(const char16_t* currency,
++                                               UErrorCode& status) {
++    if (!currency || U_FAILURE(status)) {
+         return;
+     }
+ 
+@@ -594,6 +667,10 @@ DecimalFormatSymbols::getPatternForCurrencySpacing(UCurrencySpacing type,
+     if (U_FAILURE(status)) {
+       return fNoSymbol;  // always empty.
+     }
++    const_cast<DecimalFormatSymbols*>(this)->loadCurrencyData(status);
++    if (U_FAILURE(status)) {
++      return fNoSymbol;
++    }
+     if (beforeCurrency) {
+       return currencySpcBeforeSym[static_cast<int32_t>(type)];
+     } else {
+@@ -605,12 +682,20 @@ void
+ DecimalFormatSymbols::setPatternForCurrencySpacing(UCurrencySpacing type,
+                                                    UBool beforeCurrency,
+                                              const UnicodeString& pattern) {
++  ensureCurrencyDataLoaded();
+   if (beforeCurrency) {
+     currencySpcBeforeSym[static_cast<int32_t>(type)] = pattern;
+   } else {
+     currencySpcAfterSym[static_cast<int32_t>(type)] = pattern;
+   }
+ }
++
++void DecimalFormatSymbols::ensureCurrencyDataLoaded() const {
++    if (!fIsCurrencyDataLoaded.load(std::memory_order_acquire)) {
++        UErrorCode status = U_ZERO_ERROR;
++        const_cast<DecimalFormatSymbols*>(this)->loadCurrencyData(status);
++    }
++}
+ U_NAMESPACE_END
+ 
+ #endif /* #if !UCONFIG_NO_FORMATTING */
+diff --git a/source/i18n/number_formatimpl.cpp b/source/i18n/number_formatimpl.cpp
+index 99f14e39b..881cbf7a0 100644
+--- a/source/i18n/number_formatimpl.cpp
++++ b/source/i18n/number_formatimpl.cpp
+@@ -201,9 +201,21 @@ NumberFormatterImpl::macrosToMicroGenerator(const MacroProps& macros, bool safe,
+     // Resolve the symbols. Do this here because currency may need to customize them.
+     if (macros.symbols.isDecimalFormatSymbols()) {
+         fMicros.simple.symbols = macros.symbols.getDecimalFormatSymbols();
++        if (isCurrency) {
++            const_cast<DecimalFormatSymbols*>(fMicros.simple.symbols)
++                ->loadCurrencyData(status);
++            if (U_FAILURE(status)) {
++                return nullptr;
++            }
++        }
+     } else {
++        // Pass `loadCurrencyData=isCurrency` to avoid loading currency bundles
++        // for non-currency formatting while ensuring currency-specific pattern
++        // and separator overrides are loaded for currency formatting.
+         LocalPointer<DecimalFormatSymbols> newSymbols(
+-            new DecimalFormatSymbols(macros.locale, *ns, status), status);
++            DecimalFormatSymbols::createForLocale(
++                macros.locale, *ns, status, /*loadCurrencyData=*/isCurrency),
++            status);
+         if (U_FAILURE(status)) {
+             return nullptr;
+         }
+diff --git a/source/i18n/number_mapper.cpp b/source/i18n/number_mapper.cpp
+index 457fbc0d0..46e8bd0cc 100644
+--- a/source/i18n/number_mapper.cpp
++++ b/source/i18n/number_mapper.cpp
+@@ -77,6 +77,11 @@ MacroProps NumberPropertyMapper::oldToNew(const DecimalFormatProperties& propert
+     CurrencyUnit currency;
+     UCurrencyUsage currencyUsage;
+     if (useCurrency) {
++        if (macros.symbols.isDecimalFormatSymbols()) {
++            const_cast<DecimalFormatSymbols*>(
++                macros.symbols.getDecimalFormatSymbols())
++                ->loadCurrencyData(status);
++        }
+         currency = resolveCurrency(properties, locale, status);
+         currencyUsage = properties.currencyUsage.getOrDefault(UCURR_USAGE_STANDARD);
+         // NOTE: Slicing is OK.
+diff --git a/source/i18n/numfmt.cpp b/source/i18n/numfmt.cpp
+index 40049c9ee..7e3784317 100644
+--- a/source/i18n/numfmt.cpp
++++ b/source/i18n/numfmt.cpp
+@@ -1418,9 +1418,17 @@ NumberFormat::makeInstance(const Locale& desiredLocale,
+     }
+     else {
+         // Loads the decimal symbols of the desired locale. Pass `*ns` to avoid
+-        // a redundant uncached `NumberingSystem::createInstance()` lookup.
++        // a redundant uncached `NumberingSystem::createInstance()` lookup, and
++        // only load currency bundles for currency styles.
++        bool isCurrency = (style == UNUM_CURRENCY ||
++                           style == UNUM_CURRENCY_ISO ||
++                           style == UNUM_CURRENCY_PLURAL ||
++                           style == UNUM_CURRENCY_ACCOUNTING ||
++                           style == UNUM_CASH_CURRENCY ||
++                           style == UNUM_CURRENCY_STANDARD);
+         symbolsToAdopt.adoptInsteadAndCheckErrorCode(
+-            DecimalFormatSymbols::createForLocale(desiredLocale, *ns, status),
++            DecimalFormatSymbols::createForLocale(
++                desiredLocale, *ns, status, /*loadCurrencyData=*/isCurrency),
+             status);
+         if (U_FAILURE(status)) {
+             return nullptr;
+diff --git a/source/i18n/unicode/dcfmtsym.h b/source/i18n/unicode/dcfmtsym.h
+index 49a6b99ed..17cdf6c8a 100644
+--- a/source/i18n/unicode/dcfmtsym.h
++++ b/source/i18n/unicode/dcfmtsym.h
+@@ -33,6 +33,8 @@
+ 
+ #if !UCONFIG_NO_FORMATTING
+ 
++#include <atomic>
++
+ #include "unicode/uchar.h"
+ #include "unicode/uobject.h"
+ #include "unicode/locid.h"
+@@ -210,14 +212,16 @@ public:
+ #ifndef U_HIDE_INTERNAL_API
+     /**
+      * Creates a DecimalFormatSymbols instance for the given locale using that
+-     * locale's already-resolved default NumberingSystem.
++     * locale's already-resolved default NumberingSystem, optionally skipping
++     * currency bundle loading when formatting non-currency numbers.
+      *
+      * @internal
+      */
+     U_I18N_API static DecimalFormatSymbols* createForLocale(
+         const Locale& locale,
+         const NumberingSystem& ns,
+-        UErrorCode& status);
++        UErrorCode& status,
++        UBool loadCurrencyData = true);
+ #endif  // U_HIDE_INTERNAL_API
+ 
+     /**
+@@ -321,6 +325,14 @@ public:
+      * @internal
+      */
+     U_I18N_API void setCurrency(const char16_t* currency, UErrorCode& status);
++
++    /**
++     * Loads the default currency symbols and currency spacing patterns for
++     * `locale` if they were not loaded during construction. Thread-safe.
++     *
++     * @internal
++     */
++    U_I18N_API void loadCurrencyData(UErrorCode& status);
+ #endif  // U_HIDE_INTERNAL_API
+ 
+     /**
+@@ -402,7 +414,8 @@ private:
+     void initialize(const Locale& locale, UErrorCode& success,
+                     UBool useLastResortData = false,
+                     const NumberingSystem* ns = nullptr,
+-                    UBool isLocaleDefaultNs = true);
++                    UBool isLocaleDefaultNs = true,
++                    UBool loadCurrency = true);
+ 
+     /**
+      * Initialize the symbols with default values.
+@@ -412,8 +425,17 @@ private:
+     DecimalFormatSymbols(const Locale& locale,
+                          const NumberingSystem& ns,
+                          UBool isLocaleDefaultNs,
++                         UBool loadCurrencyData,
+                          UErrorCode& status);
+ 
++    void loadCurrencyDataLocked(UErrorCode& status);
++    void setCurrencyInternal(const char16_t* currency, UErrorCode& status);
++
++    /**
++     * Lazily loads currency symbols and spacing patterns if not already loaded.
++     */
++    U_I18N_API void ensureCurrencyDataLoaded() const;
++
+ public:
+ 
+ #ifndef U_HIDE_INTERNAL_API
+@@ -546,6 +568,7 @@ private:
+     UBool fIsCustomCurrencySymbol;
+     UBool fIsCustomIntlCurrencySymbol;
+     UBool fIsLocaleDefaultNumberingSystem = false;
++    std::atomic<bool> fIsCurrencyDataLoaded{false};
+     char nsName[kInternalNumSysNameCapacity+1] = {};
+ };
+ 
+@@ -553,13 +576,7 @@ private:
+ 
+ inline UnicodeString
+ DecimalFormatSymbols::getSymbol(ENumberFormatSymbol symbol) const {
+-    const UnicodeString *strPtr;
+-    if(symbol < kFormatSymbolCount) {
+-        strPtr = &fSymbols[symbol];
+-    } else {
+-        strPtr = &fNoSymbol;
+-    }
+-    return *strPtr;
++    return getConstSymbol(symbol);
+ }
+ 
+ // See comments above for this function. Not hidden with #ifdef U_HIDE_INTERNAL_API
+@@ -567,6 +584,12 @@ inline const UnicodeString &
+ DecimalFormatSymbols::getConstSymbol(ENumberFormatSymbol symbol) const {
+     const UnicodeString *strPtr;
+     if(symbol < kFormatSymbolCount) {
++        if ((symbol == kCurrencySymbol || symbol == kIntlCurrencySymbol ||
++             symbol == kMonetarySeparatorSymbol ||
++             symbol == kMonetaryGroupingSeparatorSymbol) &&
++            !fIsCurrencyDataLoaded.load(std::memory_order_acquire)) {
++            ensureCurrencyDataLoaded();
++        }
+         strPtr = &fSymbols[symbol];
+     } else {
+         strPtr = &fNoSymbol;
+@@ -591,6 +614,12 @@ inline const UnicodeString& DecimalFormatSymbols::getConstDigitSymbol(int32_t di
+ 
+ inline void
+ DecimalFormatSymbols::setSymbol(ENumberFormatSymbol symbol, const UnicodeString &value, const UBool propagateDigits = true) {
++    if ((symbol == kCurrencySymbol || symbol == kIntlCurrencySymbol ||
++         symbol == kMonetarySeparatorSymbol ||
++         symbol == kMonetaryGroupingSeparatorSymbol) &&
++        !fIsCurrencyDataLoaded.load(std::memory_order_acquire)) {
++        ensureCurrencyDataLoaded();
++    }
+     if (symbol == kCurrencySymbol) {
+         fIsCustomCurrencySymbol = true;
+     }
+@@ -630,6 +659,9 @@ DecimalFormatSymbols::getLocale() const {
+ #ifndef U_HIDE_INTERNAL_API
+ inline const char16_t*
+ DecimalFormatSymbols::getCurrencyPattern() const {
++    if (!fIsCurrencyDataLoaded.load(std::memory_order_acquire)) {
++        ensureCurrencyDataLoaded();
++    }
+     return currPattern;
+ }
+ inline const char*
