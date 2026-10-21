@@ -191,9 +191,28 @@
     },
     "brkitr_tree": {
       "blacklist": [
-        "en_US_POSIX"
+        "de",
+        "en",
+        "en_US",
+        "en_US_POSIX",
+        "es",
+        "fr",
+        "it",
+        "pt",
+        "ru"
       ]
     },
+    "misc": {
+      "blacklist": [
+        "currencyNumericCodes",
+        "genderList",
+        "grammaticalFeatures",
+        "icustd",
+        "icuver",
+        "windowsZones"
+      ]
+    },
+    "zone_supplemental": { "filterType": "exclude" },
 // Based on the ICU63 version of
 // https://cs.chromium.org/chromium/src/third_party/icu/source/data/mappings/ucmlocal.mk?rcl=797b7c
     "conversion_mappings": {
@@ -1749,6 +1768,20 @@
       ],
       "files": {
         "whitelist": [
+          "metadata"
+        ]
+      },
+      "rules": [
+        "-/alias/usage",
+        "-/defaultContent"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "whitelist": [
           "supplementalData"
   ]
       },
@@ -1758,12 +1791,28 @@
         "+/calendarPreferenceData",
         "+/cldrVersion",
         "+/codeMappings",
-        "+/idValidity",
+        "+/idValidity/region",
         "+/measurementData",
         "+/territoryContainment",
         "+/timeData",
         "+/weekData",
         "+/weekData%variant"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "whitelist": [
+          "units"
+        ]
+      },
+      "rules": [
+        "-/unitConstants",
+        "-/unitIdComponents",
+        "-/unitPreferenceData",
+        "-/unitPrefixes"
       ]
     },
 // Remove all the Version

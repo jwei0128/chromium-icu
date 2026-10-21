@@ -644,9 +644,14 @@
     "misc": {
       "excludelist": [
         "currencyNumericCodes",
+        "genderList",
+        "grammaticalFeatures",
+        "icustd",
+        "icuver",
         "windowsZones"
       ]
     },
+    "zone_supplemental": { "filterType": "exclude" },
     "rbnf_tree": {
       "includelist": [
 // Needed by "y=jpanyear" in locales/ja.txt for calendar="japanese"
@@ -753,8 +758,6 @@
       "includelist": [
 // Need to explicitly add "root"
 	"root",
-// Need to explicitly add "tzdbNames"
-	"tzdbNames",
 
         "am",
         "ar",
@@ -2237,12 +2240,12 @@
       ],
       "files": {
         "includelist": [
-          "grammaticalFeatures"
+          "metadata"
         ]
       },
       "rules": [
-        "-/*",
-        "+/grammaticalData/derivations/*/compound/gender/per"
+        "-/alias/usage",
+        "-/defaultContent"
       ]
     },
     {
@@ -2260,12 +2263,28 @@
         "+/calendarPreferenceData",
         "+/cldrVersion",
         "+/codeMappings",
-        "+/idValidity",
+        "+/idValidity/region",
         "+/measurementData",
         "+/territoryContainment",
         "+/timeData",
         "+/weekData",
         "+/weekData%variant"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "includelist": [
+          "units"
+        ]
+      },
+      "rules": [
+        "-/unitConstants",
+        "-/unitIdComponents",
+        "-/unitPreferenceData",
+        "-/unitPrefixes"
       ]
     },
 // Remove all the Version
