@@ -276,3 +276,7 @@ D. Local Modifications
   - https://unicode-org.atlassian.net/browse/ICU-23537
   - https://github.com/unicode-org/icu/pull/4243
   - https://crbug.com/565133743
+
+15. Reuse cached NumberingSystem in NumberFormat::makeInstance and
+    NumberFormatterImpl::macrosToMicroGenerator.
+  - patches/reuse_numbering_system.patch
