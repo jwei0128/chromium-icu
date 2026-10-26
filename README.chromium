@@ -280,3 +280,7 @@ D. Local Modifications
 15. Reuse cached NumberingSystem in NumberFormat::makeInstance and
     NumberFormatterImpl::macrosToMicroGenerator.
   - patches/reuse_numbering_system.patch
+
+16. Avoid holding resbMutex during UResourceDataEntry refcount updates and
+    res_load().
+  - patches/resb_mutex.patch
