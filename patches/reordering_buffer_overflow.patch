@@ -1,0 +1,159 @@
+diff --git a/source/common/norm2allmodes.h b/source/common/norm2allmodes.h
+index 4b30d787e..10938d739 100644
+--- a/source/common/norm2allmodes.h
++++ b/source/common/norm2allmodes.h
+@@ -24,6 +24,7 @@
+ #include "unicode/unistr.h"
+ #include "cpputils.h"
+ #include "normalizer2impl.h"
++#include "putilimp.h"
+ 
+ U_NAMESPACE_BEGIN
+ 
+@@ -90,8 +91,14 @@ public:
+         int32_t firstLength=first.length();
+         UnicodeString safeMiddle;
+         {
++            int32_t destCapacity;
++            if(uprv_add32_overflow(firstLength, second.length(), &destCapacity)) {
++                first.setToBogus();
++                errorCode=U_MEMORY_ALLOCATION_ERROR;
++                return first;
++            }
+             ReorderingBuffer buffer(impl, first);
+-            if(buffer.init(firstLength+second.length(), errorCode)) {
++            if(buffer.init(destCapacity, errorCode)) {
+                 normalizeAndAppend(secondArray, secondArray+second.length(), doNormalize,
+                                    safeMiddle, buffer, errorCode);
+             }
+diff --git a/source/common/normalizer2.cpp b/source/common/normalizer2.cpp
+index dad3df4ed..4fd51f204 100644
+--- a/source/common/normalizer2.cpp
++++ b/source/common/normalizer2.cpp
+@@ -29,6 +29,7 @@
+ #include "mutex.h"
+ #include "norm2allmodes.h"
+ #include "normalizer2impl.h"
++#include "putilimp.h"
+ #include "uassert.h"
+ #include "ucln_cmn.h"
+ 
+@@ -386,8 +387,13 @@ normalizeSecondAndAppend(const UNormalizer2 *norm2,
+             // Avoid duplicate argument checking and support NUL-terminated src.
+             UnicodeString safeMiddle;
+             {
++                int32_t destCapacity;
+                 ReorderingBuffer buffer(n2wi->impl, firstString);
+-                if(buffer.init(firstLength+secondLength+1, *pErrorCode)) {  // destCapacity>=-1
++                if(uprv_add32_overflow(firstLength, secondLength, &destCapacity) ||
++                        uprv_add32_overflow(destCapacity, 1, &destCapacity)) {
++                    firstString.setToBogus();
++                    *pErrorCode=U_MEMORY_ALLOCATION_ERROR;
++                } else if(buffer.init(destCapacity, *pErrorCode)) {  // destCapacity>=-1
+                     n2wi->normalizeAndAppend(second, secondLength>=0 ? second+secondLength : nullptr,
+                                              doNormalize, safeMiddle, buffer, *pErrorCode);
+                 }
+diff --git a/source/common/normalizer2impl.cpp b/source/common/normalizer2impl.cpp
+index 758a84c11..3d42877a0 100644
+--- a/source/common/normalizer2impl.cpp
++++ b/source/common/normalizer2impl.cpp
+@@ -353,9 +353,16 @@ UBool ReorderingBuffer::resize(int32_t appendLength, UErrorCode &errorCode) {
+     int32_t reorderStartIndex = static_cast<int32_t>(reorderStart - start);
+     int32_t length = static_cast<int32_t>(limit - start);
+     str.releaseBuffer(length);
+-    int32_t newCapacity=length+appendLength;
+-    int32_t doubleCapacity=2*str.getCapacity();
+-    if(newCapacity<doubleCapacity) {
++    int32_t newCapacity;
++    if(uprv_add32_overflow(length, appendLength, &newCapacity)) {
++        str.setToBogus();
++        start=nullptr;
++        errorCode=U_MEMORY_ALLOCATION_ERROR;
++        return false;
++    }
++    int32_t doubleCapacity;
++    if(!uprv_mul32_overflow(2, str.getCapacity(), &doubleCapacity) &&
++            newCapacity<doubleCapacity) {
+         newCapacity=doubleCapacity;
+     }
+     if(newCapacity<256) {
+diff --git a/source/test/intltest/tstnorm.cpp b/source/test/intltest/tstnorm.cpp
+index f5f1278af..a88cda3d1 100644
+--- a/source/test/intltest/tstnorm.cpp
++++ b/source/test/intltest/tstnorm.cpp
+@@ -63,6 +63,7 @@ void BasicNormalizerTest::runIndexedTest(int32_t index, UBool exec,
+     TESTCASE_AUTO(TestComposeJamoTBase);
+     TESTCASE_AUTO(TestComposeBoundaryAfter);
+     TESTCASE_AUTO(TestNFKC_SCF);
++    TESTCASE_AUTO(TestReorderingBufferOverflow);
+     TESTCASE_AUTO_END;
+ }
+ 
+@@ -1892,4 +1893,55 @@ BasicNormalizerTest::TestNFKC_SCF() {
+     assertEquals("nfkc_scf", expected, result);
+ }
+ 
++void
++BasicNormalizerTest::TestReorderingBufferOverflow() {
++    IcuTestErrorCode errorCode(*this, "TestReorderingBufferOverflow");
++    const Normalizer2Impl *nfcImpl = Normalizer2Factory::getNFCImpl(errorCode);
++    if (errorCode.errDataIfFailureAndReset("Normalizer2Factory::getNFCImpl() call failed")) {
++        return;
++    }
++    {
++        UnicodeString dest(u"abcdefghij");
++        ReorderingBuffer buffer(*nfcImpl, dest);
++        assertTrue("buffer.init", buffer.init(16, errorCode));
++        char16_t ch = u'a';
++        // length (10) + appendLength (INT32_MAX - 5) overflows int32_t in ReorderingBuffer::resize().
++        assertFalse("append overflow",
++                    buffer.append(&ch, INT32_MAX - 5, true, 0, 0, errorCode));
++        assertEquals("append overflow errorCode",
++                     U_MEMORY_ALLOCATION_ERROR, errorCode.reset());
++        assertTrue("dest isBogus", dest.isBogus());
++    }
++    const Normalizer2 *nfd = Normalizer2::getNFDInstance(errorCode);
++    if (errorCode.errDataIfFailureAndReset("Normalizer2::getNFDInstance() call failed")) {
++        return;
++    }
++    {
++        UnicodeString first(u"abcdefghij");
++        UnicodeString second(false, first.getBuffer(), INT32_MAX - 5);
++        nfd->normalizeSecondAndAppend(first, second, errorCode);
++        assertEquals("normalizeSecondAndAppend overflow errorCode",
++                     U_MEMORY_ALLOCATION_ERROR, errorCode.reset());
++        assertTrue("first isBogus", first.isBogus());
++    }
++    {
++        char16_t firstBuf[16] = u"abcdefghij";
++        const char16_t *secondBuf = firstBuf + 10;
++        unorm2_normalizeSecondAndAppend(
++            reinterpret_cast<const UNormalizer2 *>(nfd),
++            firstBuf, 10, 16,
++            secondBuf, INT32_MAX - 5,
++            errorCode);
++        assertEquals("unorm2_normalizeSecondAndAppend overflow errorCode",
++                     U_MEMORY_ALLOCATION_ERROR, errorCode.reset());
++        unorm2_normalizeSecondAndAppend(
++            reinterpret_cast<const UNormalizer2 *>(nfd),
++            firstBuf, 10, INT32_MAX,
++            secondBuf, INT32_MAX - 5,
++            errorCode);
++        assertEquals("unorm2_normalizeSecondAndAppend max firstCapacity overflow errorCode",
++                     U_MEMORY_ALLOCATION_ERROR, errorCode.reset());
++    }
++}
++
+ #endif /* #if !UCONFIG_NO_NORMALIZATION */
+diff --git a/source/test/intltest/tstnorm.h b/source/test/intltest/tstnorm.h
+index 04f78006d..5ee5b1c68 100644
+--- a/source/test/intltest/tstnorm.h
++++ b/source/test/intltest/tstnorm.h
+@@ -55,6 +55,7 @@ public:
+     void TestComposeJamoTBase();
+     void TestComposeBoundaryAfter();
+     void TestNFKC_SCF();
++    void TestReorderingBufferOverflow();
+ 
+ private:
+     UnicodeString canonTests[24][3];

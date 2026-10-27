@@ -276,3 +276,9 @@ D. Local Modifications
   - https://unicode-org.atlassian.net/browse/ICU-23537
   - https://github.com/unicode-org/icu/pull/4243
   - https://crbug.com/565133743
+
+15. Prevent int32_t overflow in ReorderingBuffer::resize().
+  - patches/reordering_buffer_overflow.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23490
+  - https://github.com/unicode-org/icu/pull/4293
+  - https://crbug.com/496604554
