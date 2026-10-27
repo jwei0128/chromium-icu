@@ -645,7 +645,6 @@
       "excludelist": [
         "currencyNumericCodes",
         "genderList",
-        "grammaticalFeatures",
         "icustd",
         "icuver",
         "windowsZones"
@@ -2232,6 +2231,20 @@
         "+/LocaleScript",
         "+/layout",
         "+/Version"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "includelist": [
+          "grammaticalFeatures"
+        ]
+      },
+      "rules": [
+        "-/*",
+        "+/grammaticalData/derivations/*/compound/gender/per"
       ]
     },
     {

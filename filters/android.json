@@ -165,7 +165,6 @@
       "excludelist": [
         "currencyNumericCodes",
         "genderList",
-        "grammaticalFeatures",
         "icustd",
         "icuver",
         "windowsZones"
@@ -2079,6 +2078,20 @@
         "-/characterLabelPattern",
         "-/Variants",
         "+/Variants/OXENDICT"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "includelist": [
+          "grammaticalFeatures"
+        ]
+      },
+      "rules": [
+        "-/*",
+        "+/grammaticalData/derivations/*/compound/gender/per"
       ]
     },
     {

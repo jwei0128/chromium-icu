@@ -205,7 +205,6 @@
       "excludelist": [
         "currencyNumericCodes",
         "genderList",
-        "grammaticalFeatures",
         "icustd",
         "icuver",
         "windowsZones"
@@ -1453,6 +1452,20 @@
         "-/*/unihan",
         "-/*/big5han",
         "-/*/gb2312han"
+      ]
+    },
+    {
+      "categories": [
+        "misc"
+      ],
+      "files": {
+        "includelist": [
+          "grammaticalFeatures"
+        ]
+      },
+      "rules": [
+        "-/*",
+        "+/grammaticalData/derivations/*/compound/gender/per"
       ]
     },
     {
