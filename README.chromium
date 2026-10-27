@@ -294,3 +294,18 @@ D. Local Modifications
   - https://unicode-org.atlassian.net/browse/ICU-23539
   - https://github.com/unicode-org/icu/pull/4264
   - https://crbug.com/567827593
+
+18. Use 64-bit CE indexes in usearch CEIBuffer.
+  - patches/usearch_ceibuffer_64bit.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23568
+  - https://github.com/unicode-org/icu/pull/4295
+  - https://crbug.com/574025697
+
+19. Fix FCD collation iterator backward tccc check on supplementary characters.
+  - patches/collation_fcd_tccc.patch
+  - https://unicode-org.atlassian.net/browse/ICU-22511
+  - https://unicode-org.atlassian.net/browse/ICU-23569
+  - https://github.com/unicode-org/icu/pull/3914
+  - https://github.com/unicode-org/icu/pull/4214
+  - https://github.com/unicode-org/icu/pull/4296
+  - https://crbug.com/574025697
