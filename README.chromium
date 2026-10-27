@@ -276,3 +276,15 @@ D. Local Modifications
   - https://unicode-org.atlassian.net/browse/ICU-23537
   - https://github.com/unicode-org/icu/pull/4243
   - https://crbug.com/565133743
+
+16. Limit maximum formatted digits in NumberFormatterImpl.
+  - patches/number_max_digits.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23144
+  - https://github.com/unicode-org/icu/pull/4076
+  - https://crbug.com/567827593
+
+17. Return early in NumberRangeFormatterImpl::formatRange on failure.
+  - patches/numrange_impl.patch
+  - https://unicode-org.atlassian.net/browse/ICU-23539
+  - https://github.com/unicode-org/icu/pull/4264
+  - https://crbug.com/567827593
