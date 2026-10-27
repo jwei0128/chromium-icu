@@ -305,6 +305,7 @@ class NumberSkeletonTest : public IntlTest {
     void perUnitInArabic();
     void perUnitToSkeleton();
     void measurementSystemOverride();
+    void testIssue23144();
 
     void runIndexedTest(int32_t index, UBool exec, const char*& name, char* par = nullptr) override;
 
@@ -335,6 +336,7 @@ class NumberRangeFormatterTest : public IntlTestWithFieldPosition {
     void testCreateLNRFFromNumberingSystemInSkeleton();
     void test22288_DifferentStartEndSettings();
     void test23110_PercentApproximately();
+    void test23539_LargeRangeError();
 
     void runIndexedTest(int32_t index, UBool exec, const char*& name, char* par = nullptr) override;
 
