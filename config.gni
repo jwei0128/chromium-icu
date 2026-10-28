@@ -10,6 +10,11 @@ if (defined(is_fuchsia_tree) && is_fuchsia_tree) {
   import("//build/icu.gni")
 } else {
   declare_args() {
+  # Optional file listing regexes (one per line) of ICU data items to drop
+  # from the iOS icudtl.dat bundle, e.g. for size-constrained ChromeWebView
+  # builds. Empty means the data file is bundled unchanged.
+  icu_ios_data_remove_list = ""
+
     # Tells icu to load an external data file rather than rely on the icudata
     # being linked directly into the binary.
     icu_use_data_file = true

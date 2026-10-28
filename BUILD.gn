@@ -480,8 +480,29 @@ if (icu_copy_icudata_to_root_build_dir) {
 
 if (icu_use_data_file) {
   if (is_ios) {
+    if (icu_ios_data_remove_list != "") {
+      action("filter_icudata") {
+        script = "scripts/filter_data.py"
+        inputs = [
+          "$data_dir/$data_bundle",
+          icu_ios_data_remove_list,
+        ]
+        outputs = [ "$target_gen_dir/filtered/$data_bundle" ]
+        args = [
+          "filter",
+          rebase_path(inputs[0], root_build_dir),
+          rebase_path(outputs[0], root_build_dir),
+          rebase_path(icu_ios_data_remove_list, root_build_dir),
+        ]
+      }
+    }
     bundle_data("icudata") {
-      sources = [ "$data_dir/$data_bundle" ]
+      if (icu_ios_data_remove_list != "") {
+        sources = get_target_outputs(":filter_icudata")
+        public_deps = [ ":filter_icudata" ]
+      } else {
+        sources = [ "$data_dir/$data_bundle" ]
+      }
       outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
   } else {
